@@ -34,4 +34,5 @@ void MainWindow::leerServidor()
 void MainWindow::on_btnMensaje_clicked()
 {
     tcpCliente->write(ui->edtMensaje->text().toLatin1().data(), ui->edtMensaje->text().size());
+    ui->edtMensaje->clear();
 }

@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>Cliente</string>
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout">
@@ -26,7 +26,7 @@
       <item>
        <widget class="QPushButton" name="btnMensaje">
         <property name="text">
-         <string>PushButton</string>
+         <string>Enviar</string>
         </property>
        </widget>
       </item>
