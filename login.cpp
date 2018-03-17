@@ -24,11 +24,10 @@ LogIn::~LogIn()
 
 void LogIn::on_btnLogIn_clicked()
 {
-    QString mensaje("<LOGIN><");
+    QString mensaje("LOGIN^");
     mensaje.append(ui->edtNick->text());
-    mensaje.append("><");
+    mensaje.append("^");
     mensaje.append(ui->edtPass->text());
-    mensaje.append(">");
 
     tcpCliente->write(
                         mensaje.toLatin1().data(),
