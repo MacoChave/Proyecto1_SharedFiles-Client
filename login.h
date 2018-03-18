@@ -6,6 +6,7 @@
 #include <QHostAddress>
 #include <QStringList>
 #include <QString>
+#include <QMessageBox>
 #include <QDebug>
 
 namespace Ui {
@@ -25,7 +26,6 @@ private slots:
 
     void on_btnLogUp_clicked();
 
-private slots:
     void leerServidor();
 
 private:

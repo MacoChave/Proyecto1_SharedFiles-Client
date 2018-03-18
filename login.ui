@@ -6,54 +6,137 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>235</width>
-    <height>220</height>
+    <width>303</width>
+    <height>391</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QFormLayout" name="formLayout">
+  <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
-    <widget class="QLabel" name="lblNick">
-     <property name="text">
-      <string>Nickname</string>
+    <widget class="QToolBox" name="toolBox">
+     <property name="frameShape">
+      <enum>QFrame::NoFrame</enum>
      </property>
-    </widget>
-   </item>
-   <item row="0" column="1">
-    <widget class="QLineEdit" name="edtNick">
-     <property name="placeholderText">
-      <string>Nickname</string>
+     <property name="frameShadow">
+      <enum>QFrame::Plain</enum>
      </property>
-    </widget>
-   </item>
-   <item row="1" column="0">
-    <widget class="QLabel" name="lblPass">
-     <property name="text">
-      <string>Password</string>
+     <property name="currentIndex">
+      <number>1</number>
      </property>
-    </widget>
-   </item>
-   <item row="1" column="1">
-    <widget class="QLineEdit" name="edtPass">
-     <property name="placeholderText">
-      <string>Password</string>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="0" colspan="2">
-    <widget class="QPushButton" name="btnLogIn">
-     <property name="text">
-      <string>LogIn</string>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="0" colspan="2">
-    <widget class="QPushButton" name="btnLogUp">
-     <property name="text">
-      <string>LogUp</string>
-     </property>
+     <widget class="QWidget" name="pageLogIn">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>285</width>
+        <height>305</height>
+       </rect>
+      </property>
+      <attribute name="label">
+       <string>LogIn</string>
+      </attribute>
+      <layout class="QFormLayout" name="formLayout">
+       <item row="0" column="0">
+        <widget class="QLabel" name="lbl_Login_Nickname">
+         <property name="text">
+          <string>Nickname</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QLineEdit" name="edt_Login_Nickname">
+         <property name="placeholderText">
+          <string>Nickname</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="lbl_Login_Pass">
+         <property name="text">
+          <string>Password</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QLineEdit" name="edt_Login_Pass">
+         <property name="placeholderText">
+          <string>Password</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0" colspan="2">
+        <widget class="QPushButton" name="btnLogIn">
+         <property name="text">
+          <string>LogIn</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="page_2">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>285</width>
+        <height>305</height>
+       </rect>
+      </property>
+      <attribute name="label">
+       <string>LogUp</string>
+      </attribute>
+      <layout class="QFormLayout" name="formLayout_2">
+       <item row="0" column="0" colspan="2">
+        <widget class="QLabel" name="lbl_Logup_Nickname">
+         <property name="text">
+          <string>Nickname</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QLineEdit" name="edt_Logup_Nickname"/>
+       </item>
+       <item row="2" column="0" colspan="2">
+        <widget class="QLabel" name="lbl_Logup_Nombre">
+         <property name="text">
+          <string>Nombre</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QLineEdit" name="edt_Logup_Nombre"/>
+       </item>
+       <item row="4" column="0" colspan="2">
+        <widget class="QLabel" name="lbl_Logup_Correo">
+         <property name="text">
+          <string>Correo</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="1">
+        <widget class="QLineEdit" name="edt_Logup_Correo"/>
+       </item>
+       <item row="6" column="0" colspan="2">
+        <widget class="QLabel" name="lbl_Logup_Pass">
+         <property name="text">
+          <string>Password</string>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="1">
+        <widget class="QLineEdit" name="edt_Logup_Pass"/>
+       </item>
+       <item row="8" column="1">
+        <widget class="QPushButton" name="btnLogUp">
+         <property name="text">
+          <string>LogUp</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
     </widget>
    </item>
   </layout>
