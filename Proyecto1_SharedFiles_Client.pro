@@ -14,12 +14,17 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    login.cpp
+    login.cpp \
+    GenericTree/nodegenerictree.cpp \
+    GenericTree/tadgenerictree.cpp
 
 HEADERS  += mainwindow.h \
     login.h \
     List/list.h \
-    List/node.h
+    List/node.h \
+    GenericTree/generictree.h \
+    GenericTree/nodegenerictree.h \
+    GenericTree/tadgenerictree.h
 
 FORMS    += mainwindow.ui \
     login.ui

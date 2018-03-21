@@ -22,12 +22,15 @@ private slots:
     void on_btnMensaje_clicked();
 
 public slots:
-    void leerServidor();
+    void consumer();
+
+    void producer(QString value);
 
 private:
     Ui::MainWindow *ui;
 
     QTcpSocket *tcpCliente;
+    void interpretarMensaje(QString mensaje);
 };
 
 #endif // MAINWINDOW_H

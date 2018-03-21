@@ -13,7 +13,7 @@ MainWindow::MainWindow(QWidget *parent) :
                 tcpCliente,
                 SIGNAL (readyRead()),
                 this,
-                SLOT (leerServidor())
+                SLOT (consumer())
             );
 }
 
@@ -22,17 +22,33 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::leerServidor()
+void MainWindow::consumer()
 {
     QByteArray buffer;
     buffer.resize(tcpCliente->bytesAvailable());
     tcpCliente->read(buffer.data(), buffer.size());
-    ui->edtLog->append((QString) buffer);
-    qDebug() << QString (buffer);
+    interpretarMensaje(QString (buffer));
+}
+
+void MainWindow::producer(QString value)
+{
+    tcpCliente->write(
+                        value.toLatin1().data(),
+                        value.size()
+                    );
 }
 
 void MainWindow::on_btnMensaje_clicked()
 {
-    tcpCliente->write(ui->edtMensaje->text().toLatin1().data(), ui->edtMensaje->text().size());
-    ui->edtMensaje->clear();
+    QString mensaje("LOGIN^");
+    mensaje.append(user);
+    mensaje.append("^");
+    mensaje.append(pass);
+
+    producer(mensaje);
+}
+
+void MainWindow::interpretarMensaje(QString mensaje)
+{
+
 }

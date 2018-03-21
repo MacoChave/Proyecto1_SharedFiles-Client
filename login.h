@@ -8,6 +8,7 @@
 #include <QString>
 #include <QMessageBox>
 #include <QDebug>
+#include "mainwindow.h"
 
 namespace Ui {
 class LogIn;
@@ -26,10 +27,14 @@ private slots:
 
     void on_btnLogUp_clicked();
 
-    void leerServidor();
+    void consumer();
+
+    void producer(QString value);
 
 private:
     Ui::LogIn *ui;
+
+    MainWindow w;
 
     QTcpSocket *tcpCliente;
     void interpretarMensaje(QString mensaje);

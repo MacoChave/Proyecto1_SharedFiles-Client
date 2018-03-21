@@ -13,7 +13,7 @@ LogIn::LogIn(QWidget *parent) :
                 tcpCliente,
                 SIGNAL (readyRead()),
                 this,
-                SLOT (leerServidor())
+                SLOT (consumer())
             );
 }
 
@@ -41,10 +41,7 @@ void LogIn::on_btnLogIn_clicked()
     mensaje.append("^");
     mensaje.append(pass);
 
-    tcpCliente->write(
-                        mensaje.toLatin1().data(),
-                        mensaje.size()
-                    );
+    producer(mensaje);
 }
 
 void LogIn::on_btnLogUp_clicked()
@@ -63,18 +60,23 @@ void LogIn::on_btnLogUp_clicked()
     mensaje.append("^");
     mensaje.append(correo);
 
-    tcpCliente->write(
-                        mensaje.toLatin1().data(),
-                        mensaje.size()
-                    );
+    producer(mensaje);
 }
 
-void LogIn::leerServidor()
+void LogIn::consumer()
 {
     QByteArray buffer;
     buffer.resize(tcpCliente->bytesAvailable());
     tcpCliente->read(buffer.data(), buffer.size());
     interpretarMensaje(QString (buffer));
+}
+
+void LogIn::producer(QString value)
+{
+    tcpCliente->write(
+                        value.toLatin1().data(),
+                        value.size()
+                    );
 }
 
 void LogIn::interpretarMensaje(QString mensaje)
@@ -89,6 +91,14 @@ void LogIn::interpretarMensaje(QString mensaje)
             msg.setWindowTitle("Informacion");
             msg.setText("Credenciales aprobadas");
             msg.exec();
+
+            w.setWindowTitle("Cliente");
+            w.show();
+
+            delete tcpCliente;
+
+            this->hide();
+
             return;
         }
         else
@@ -108,6 +118,7 @@ void LogIn::interpretarMensaje(QString mensaje)
             msg.setWindowTitle("Informacion");
             msg.setText("Usuario creado satisfactoriamente");
             msg.exec();
+
             return;
         }
         else
