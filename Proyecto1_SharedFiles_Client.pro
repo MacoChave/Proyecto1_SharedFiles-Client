@@ -17,7 +17,9 @@ SOURCES += main.cpp\
     login.cpp
 
 HEADERS  += mainwindow.h \
-    login.h
+    login.h \
+    List/list.h \
+    List/node.h
 
 FORMS    += mainwindow.ui \
     login.ui
