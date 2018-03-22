@@ -6,6 +6,8 @@
 #include <QHostAddress>
 #include <QDebug>
 
+#include "dialoglogin.h"
+
 namespace Ui {
 class MainWindow;
 }
@@ -19,7 +21,24 @@ public:
     ~MainWindow();
 
 private slots:
-    void on_btnMensaje_clicked();
+
+    void on_btnLogin_clicked();
+
+    void on_btnLogout_clicked();
+
+    void on_btnActualizar_clicked();
+
+    void on_btnEliminar_clicked();
+
+    void on_btnVer_clicked();
+
+    void on_btnNuevo_clicked();
+
+    void on_btnLienzo_clicked();
+
+    void on_btnPresentacion_clicked();
+
+    void on_btnDocumento_clicked();
 
 public slots:
     void consumer();
@@ -28,9 +47,11 @@ public slots:
 
 private:
     Ui::MainWindow *ui;
+    QString usuario;
 
     QTcpSocket *tcpCliente;
     void interpretarMensaje(QString mensaje);
+    void conectar();
 };
 
 #endif // MAINWINDOW_H
