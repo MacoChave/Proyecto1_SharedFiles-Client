@@ -13,7 +13,7 @@ DialogLogin::~DialogLogin()
     delete ui;
 }
 
-void DialogLogin::setTcpClient(QTcpSocket *value)
+void DialogLogin::setTcp(QTcpSocket *value)
 {
     tcpCliente = value;
 }
@@ -25,11 +25,11 @@ void DialogLogin::on_btnLogIn_clicked()
 
     if (user.isEmpty() || pass.isEmpty())
     {
-        QMessageBox::warning(
-                    this,
-                    "Precaución",
-                    "No se admiten campos vacíos"
-                    );
+        QMessageBox msg;
+        msg.setWindowTitle("Precaución");
+        msg.setText("No se permiten campos vacíos");
+        msg.exec();
+
         return;
     }
 
@@ -84,22 +84,20 @@ void DialogLogin::interpreter(QString mensaje)
     {
         if (splMensaje[1].compare("CORRECTO") == 0)
         {
-            QMessageBox::information(
-                        this,
-                        "Informacion",
-                        "Credenciales aprobadas"
-                        );
+            QMessageBox msg;
+            msg.setWindowTitle("Información");
+            msg.setText("Credenciales correctas");
+            msg.exec();
 
             accept();
-            this->close();
         }
         else
         {
-            QMessageBox::information(
-                        this,
-                        "Informacion",
-                        "Credenciales no aprobadas"
-                        );
+            QMessageBox msg;
+            msg.setWindowTitle("Información");
+            msg.setText("Credenciales incorrectas");
+            msg.exec();
+
             return;
         }
     }
@@ -107,20 +105,20 @@ void DialogLogin::interpreter(QString mensaje)
     {
         if (splMensaje[1].compare("CORRECTO") == 0)
         {
-            QMessageBox::information(
-                        this,
-                        "Informacion",
-                        "Usuario creado satisfactoriamente"
-                        );
+            QMessageBox msg;
+            msg.setWindowTitle("Información");
+            msg.setText("Usuario creado satisfactoriamente");
+            msg.exec();
+
             accept();
         }
         else
         {
-            QMessageBox::information(
-                        this,
-                        "Informacion",
-                        "Usuario no creado"
-                        );
+            QMessageBox msg;
+            msg.setWindowTitle("Información");
+            msg.setText("Usuario no creado");
+            msg.exec();
+
             return;
         }
     }

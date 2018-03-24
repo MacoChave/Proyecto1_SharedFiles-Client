@@ -21,7 +21,7 @@ public:
     explicit DialogLogin(QWidget *parent = 0);
     ~DialogLogin();
 
-    void setTcpClient(QTcpSocket *value);
+    void setTcp(QTcpSocket *value);
 
 private slots:
     void on_btnLogIn_clicked();

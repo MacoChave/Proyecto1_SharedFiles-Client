@@ -16,7 +16,8 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     GenericTree/nodegenerictree.cpp \
     GenericTree/tadgenerictree.cpp \
-    dialoglogin.cpp
+    dialoglogin.cpp \
+    dialogdocument.cpp
 
 HEADERS  += mainwindow.h \
     List/list.h \
@@ -24,7 +25,9 @@ HEADERS  += mainwindow.h \
     GenericTree/generictree.h \
     GenericTree/nodegenerictree.h \
     GenericTree/tadgenerictree.h \
-    dialoglogin.h
+    dialoglogin.h \
+    dialogdocument.h
 
 FORMS    += mainwindow.ui \
-    dialoglogin.ui
+    dialoglogin.ui \
+    dialogdocument.ui
