@@ -2,21 +2,41 @@
 #define DIALOGLOGIN_H
 
 #include <QDialog>
+#include <QTcpSocket>
+#include <QHostAddress>
+#include <QStringList>
+#include <QString>
+#include <QMessageBox>
+#include <QDebug>
 
 namespace Ui {
-class DialogLogIn;
+class DialogLogin;
 }
 
-class DialogLogIn : public QDialog
+class DialogLogin : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit DialogLogIn(QWidget *parent = 0);
-    ~DialogLogIn();
+    explicit DialogLogin(QWidget *parent = 0);
+    ~DialogLogin();
+
+    void setTcp(QTcpSocket *value);
+
+private slots:
+    void on_btnLogIn_clicked();
+
+    void on_btnLogUp_clicked();
+
+    void consumer();
+
+    void producer(QString value);
 
 private:
-    Ui::DialogLogIn *ui;
+    Ui::DialogLogin *ui;
+    QTcpSocket *tcpCliente;
+
+    void interpreter(QString mensaje);
 };
 
 #endif // DIALOGLOGIN_H

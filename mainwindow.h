@@ -5,6 +5,10 @@
 #include <QTcpSocket>
 #include <QHostAddress>
 #include <QDebug>
+#include <QList>
+
+#include "dialoglogin.h"
+#include "dialogdocument.h"
 
 namespace Ui {
 class MainWindow;
@@ -19,15 +23,42 @@ public:
     ~MainWindow();
 
 private slots:
-    void on_btnMensaje_clicked();
+
+    void on_btnActualizar_clicked();
+
+    void on_btnLogin_clicked();
+
+    void on_btnLogout_clicked();
+
+    void on_btnEliminar_clicked();
+
+    void on_btnVer_clicked();
+
+    void on_btnNuevo_clicked();
+
+    void on_btnDocumento_clicked();
+
+    void on_btnPresentacion_clicked();
+
+    void on_btnLienzo_clicked();
 
 public slots:
-    void leerServidor();
+    void consumer();
+
+    void producer(QString value);
 
 private:
     Ui::MainWindow *ui;
-
+    QString usuario;
+    QString pathTemporal;
     QTcpSocket *tcpCliente;
+
+    void conectar();
+    void interpretarMensaje(QString mensaje);
+
+    void cargarInformacion();
+    void limpiarInformacion();
+    void limpiarTabla();
 };
 
 #endif // MAINWINDOW_H

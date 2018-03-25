@@ -14,12 +14,20 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    login.cpp
+    GenericTree/nodegenerictree.cpp \
+    GenericTree/tadgenerictree.cpp \
+    dialoglogin.cpp \
+    dialogdocument.cpp
 
 HEADERS  += mainwindow.h \
-    login.h \
     List/list.h \
-    List/node.h
+    List/node.h \
+    GenericTree/generictree.h \
+    GenericTree/nodegenerictree.h \
+    GenericTree/tadgenerictree.h \
+    dialoglogin.h \
+    dialogdocument.h
 
 FORMS    += mainwindow.ui \
-    login.ui
+    dialoglogin.ui \
+    dialogdocument.ui
