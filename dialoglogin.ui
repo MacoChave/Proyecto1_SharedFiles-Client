@@ -50,6 +50,9 @@
        </item>
        <item row="0" column="1">
         <widget class="QLineEdit" name="edt_Login_Nickname">
+         <property name="text">
+          <string>esvux</string>
+         </property>
          <property name="placeholderText">
           <string>Nickname</string>
          </property>
@@ -64,6 +67,9 @@
        </item>
        <item row="1" column="1">
         <widget class="QLineEdit" name="edt_Login_Pass">
+         <property name="text">
+          <string>62c8ad0a15d9d1ca38d5dee762a16e01</string>
+         </property>
          <property name="placeholderText">
           <string>Password</string>
          </property>

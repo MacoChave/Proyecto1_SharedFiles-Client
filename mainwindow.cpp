@@ -67,12 +67,20 @@ void MainWindow::interpretarMensaje(QString mensaje)
     {
         if (splMensaje.size() > 1)
         {
-            int y = ui->tblDocumentos->rowCount();
+            for (int i = 1; i <= splMensaje.size() - 1; i++)
+            {
+                if (splMensaje[i].isEmpty())
+                    break;
 
-            ui->tblDocumentos->insertRow(y);
-            ui->tblDocumentos->setItem(y, 0, new QTableWidgetItem(splMensaje[1]));
-            ui->tblDocumentos->setItem(y, 1, new QTableWidgetItem(splMensaje[2]));
-            ui->tblDocumentos->setItem(y, 2, new QTableWidgetItem(splMensaje[3]));
+                qDebug() << i;
+                int y = ui->tblDocumentos->rowCount();
+
+                ui->tblDocumentos->insertRow(y);
+                ui->tblDocumentos->setItem(y, 0, new QTableWidgetItem(splMensaje[i++]));
+                ui->tblDocumentos->setItem(y, 1, new QTableWidgetItem(splMensaje[i++]));
+                ui->tblDocumentos->setItem(y, 2, new QTableWidgetItem(splMensaje[i++]));
+                qDebug() << i;
+            }
         }
         else
         {
@@ -85,6 +93,7 @@ void MainWindow::interpretarMensaje(QString mensaje)
     else if (mensaje.startsWith("INFODOC"))
     {
         pathTemporal = splMensaje[1];
+        qDebug() << pathTemporal;
     }
     else if (mensaje.startsWith("CREATEDOCS"))
     {
@@ -213,7 +222,8 @@ void MainWindow::on_btnVer_clicked()
 {
     if (usuario.isEmpty())
         return;
-    on_btnActualizar_clicked();
+    QString filename = ui->tblDocumentos->currentItem()->text();
+    qDebug() << filename;
 }
 
 void MainWindow::on_btnNuevo_clicked()
