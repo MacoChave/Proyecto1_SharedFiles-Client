@@ -36,6 +36,7 @@ private:
     Ui::DialogLogin *ui;
     QTcpSocket *tcpCliente;
 
+    void conectar();
     void interpreter(QString mensaje);
 };
 

@@ -6,6 +6,7 @@ DialogLogin::DialogLogin(QWidget *parent) :
     ui(new Ui::DialogLogin)
 {
     ui->setupUi(this);
+    conectar();
 }
 
 DialogLogin::~DialogLogin()
@@ -60,6 +61,18 @@ void DialogLogin::on_btnLogUp_clicked()
     producer(mensaje);
 }
 
+void DialogLogin::conectar()
+{
+    tcpCliente = new QTcpSocket(this);
+    tcpCliente->connectToHost(QHostAddress::LocalHost, 1234);
+    connect(
+                tcpCliente,
+                SIGNAL (readyRead()),
+                this,
+                SLOT (consumer())
+                );
+}
+
 void DialogLogin::consumer()
 {
     QByteArray buffer;
@@ -79,6 +92,7 @@ void DialogLogin::producer(QString value)
 void DialogLogin::interpreter(QString mensaje)
 {
     QStringList splMensaje = mensaje.split("^");
+    qDebug() << "LOGEO " << splMensaje;
 
     if (mensaje.startsWith("LOGIN"))
     {

@@ -4,9 +4,19 @@
 #include <QDialog>
 #include <QFileDialog>
 #include <QTcpSocket>
+#include <QHostAddress>
 #include <QList>
+#include <QFile>
+#include <QTextStream>
+#include <QDebug>
+
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonArray>
+#include <QJsonValue>
 
 #include "GenericTree/generictree.h"
+#include "GenericTree/tadgenerictree.h"
 
 namespace Ui {
 class DialogDocument;
@@ -21,8 +31,13 @@ public:
     ~DialogDocument();
 
     void setTcp(QTcpSocket *value);
+    void setInfo(QString _filename, QString _permiso);
 
 private slots:
+    void consumer();
+
+    void producer(QString value);
+
     void on_btnGuardar_clicked();
 
     void on_btnCancelar_clicked();
@@ -49,9 +64,20 @@ private slots:
 
 private:
     Ui::DialogDocument *ui;
+    QString dateMod;
     QString filename;
+    GenericTree<NodeGenericTree *> *tree;
+    int count;
+
+    QJsonDocument jsd;
+
     QTcpSocket *tcpCliente;
     int opcion;
+
+    void conectar();
+    void interpreter(QString mensaje);
+    void cargarArbol();
+    List<NodeGenericTree *> *obtenerHijos(QJsonArray currentJSA);
 };
 
 #endif // DIALOGDOCUMENT_H

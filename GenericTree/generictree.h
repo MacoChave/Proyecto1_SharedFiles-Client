@@ -72,7 +72,8 @@ QString GenericTree<T>::graph()
     text.append(" {\n");
     text.append("node [shape = \"box\"]\n");
 
-    text.append(root->createNode());
+    if (root != NULL)
+        text.append(root->createNode());
 
     text.append(graph(root));
 

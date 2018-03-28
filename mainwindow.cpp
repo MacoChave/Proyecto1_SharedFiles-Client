@@ -9,8 +9,6 @@ MainWindow::MainWindow(QWidget *parent) :
     usuario = "";
     limpiarInformacion();
     ui->frmNuevo->setVisible(false);
-
-    conectar();
 }
 
 MainWindow::~MainWindow()
@@ -52,7 +50,7 @@ void MainWindow::producer(QString value)
 void MainWindow::interpretarMensaje(QString mensaje)
 {
     QStringList splMensaje = mensaje.split("^");
-    qDebug() << splMensaje;
+    qDebug() << "MAIN WINDOW " << splMensaje;
 
     if (mensaje.startsWith("SESSION"))
     {
@@ -72,14 +70,12 @@ void MainWindow::interpretarMensaje(QString mensaje)
                 if (splMensaje[i].isEmpty())
                     break;
 
-                qDebug() << i;
                 int y = ui->tblDocumentos->rowCount();
 
                 ui->tblDocumentos->insertRow(y);
                 ui->tblDocumentos->setItem(y, 0, new QTableWidgetItem(splMensaje[i++]));
                 ui->tblDocumentos->setItem(y, 1, new QTableWidgetItem(splMensaje[i++]));
-                ui->tblDocumentos->setItem(y, 2, new QTableWidgetItem(splMensaje[i++]));
-                qDebug() << i;
+                ui->tblDocumentos->setItem(y, 2, new QTableWidgetItem(splMensaje[i]));
             }
         }
         else
@@ -89,11 +85,6 @@ void MainWindow::interpretarMensaje(QString mensaje)
             msg.setText("El usuario no tiene archivos \n Pulse en 'nuevo' para crear uno");
             msg.exec();
         }
-    }
-    else if (mensaje.startsWith("INFODOC"))
-    {
-        pathTemporal = splMensaje[1];
-        qDebug() << pathTemporal;
     }
     else if (mensaje.startsWith("CREATEDOCS"))
     {
@@ -194,9 +185,9 @@ void MainWindow::on_btnLogin_clicked()
 {
     DialogLogin l(this);
     l.setWindowTitle("LogIn / LogUp");
-    l.setTcp(tcpCliente);
-
     l.exec();
+
+    conectar();
     producer("SESSION^USUARIO");
 }
 
@@ -215,15 +206,41 @@ void MainWindow::on_btnEliminar_clicked()
 {
     if (usuario.isEmpty())
         return;
-    on_btnActualizar_clicked();
+
+    int y = ui->tblDocumentos->currentRow();
+    QString filename = ui->tblDocumentos->item(y, 0)->text();
+    filename.push_front("DELETEDOCS^");
+    producer(filename);
 }
 
 void MainWindow::on_btnVer_clicked()
 {
     if (usuario.isEmpty())
         return;
-    QString filename = ui->tblDocumentos->currentItem()->text();
-    qDebug() << filename;
+
+    int y = ui->tblDocumentos->currentRow();
+    QString filename = ui->tblDocumentos->item(y, 0)->text();
+    QString tipo = ui->tblDocumentos->item(y, 1)->text();
+    QString permiso = ui->tblDocumentos->item(y, 2)->text();
+
+    tcpCliente = NULL;
+    if (tipo.compare("Documento") == 0)
+    {
+        DialogDocument d(this);
+        d.setWindowTitle("Editor de documentos");
+        d.setInfo(filename, permiso);
+        d.exec();
+    }
+    else if (tipo.compare("Lienzo") == 0)
+    {
+
+    }
+    else
+    {
+
+    }
+
+    conectar();
 }
 
 void MainWindow::on_btnNuevo_clicked()
@@ -232,8 +249,6 @@ void MainWindow::on_btnNuevo_clicked()
         return;
 
     ui->frmNuevo->setVisible(true);
-
-    on_btnActualizar_clicked();
 }
 
 /***********************************************************************************
@@ -241,20 +256,28 @@ void MainWindow::on_btnNuevo_clicked()
  **********************************************************************************/
 void MainWindow::on_btnDocumento_clicked()
 {
+    tcpCliente = NULL;
     DialogDocument d(this);
-    d.setTcp(tcpCliente);
     d.setWindowTitle("Editor de documentos");
     d.exec();
 
+    conectar();
+    on_btnActualizar_clicked();
     ui->frmNuevo->setVisible(false);
 }
 
 void MainWindow::on_btnPresentacion_clicked()
 {
-
+    tcpCliente = NULL;
+    conectar();
+    on_btnActualizar_clicked();
+    ui->frmNuevo->setVisible(false);
 }
 
 void MainWindow::on_btnLienzo_clicked()
 {
-
+    tcpCliente = NULL;
+    conectar();
+    on_btnActualizar_clicked();
+    ui->frmNuevo->setVisible(false);
 }
