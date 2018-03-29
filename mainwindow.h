@@ -9,6 +9,7 @@
 
 #include "dialoglogin.h"
 #include "dialogdocument.h"
+#include "dialogpresentacion.h"
 
 namespace Ui {
 class MainWindow;

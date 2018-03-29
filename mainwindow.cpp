@@ -241,7 +241,14 @@ void MainWindow::on_btnDocumento_clicked()
 
 void MainWindow::on_btnPresentacion_clicked()
 {
+    tcpCliente = NULL;
+    DialogPresentacion p(this);
+    p.setWindowTitle("Editor de Presentaciones");
+    p.exec();
 
+    conectar();
+    on_btnActualizar_clicked();
+    ui->frmNuevo->setVisible(false);
 }
 
 void MainWindow::on_btnLienzo_clicked()
