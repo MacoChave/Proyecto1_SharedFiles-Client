@@ -115,7 +115,7 @@ QString TADList::createNode()
 QString TADList::pointNode(TADList *value)
 {
     QString node("\n");
-    if (next != NULL)
+    if (value != NULL)
     {
         node.append(getNodeName());
         node.append(" -> ");

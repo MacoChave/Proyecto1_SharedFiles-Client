@@ -12,7 +12,7 @@
 #include <QJsonArray>
 #include <QJsonValue>
 
-#include "List/list.h"
+#include "DoubleList/doublelist.h"
 #include "DoubleList/tadlist.h"
 
 namespace Ui {
@@ -28,6 +28,8 @@ public:
     ~DialogPresentacion();
 
     void setInfo(QString _filename, QString _permiso, int layout);
+
+    void producer(QString value);
 
 private slots:
     void consumer();
@@ -66,9 +68,9 @@ private:
     QString filename;
     QString permiso;
     QTcpSocket *tcpCliente;
-    List<TADList *> *lista;
+    DoubleList<TADList *> *lista;
 
-    QJsonDocument *jsd;
+    QJsonDocument jsd;
 
     void conectar();
     void interpreter(QString mensaje);

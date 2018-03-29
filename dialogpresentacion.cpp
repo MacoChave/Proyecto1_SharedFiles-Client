@@ -9,7 +9,7 @@ DialogPresentacion::DialogPresentacion(QWidget *parent) :
     usuario = "";
     filename = "";
     permiso = "";
-    lista = new List<TADList *>();
+    lista = new DoubleList<TADList *>();
 
     conectar();
 }
@@ -62,10 +62,10 @@ void DialogPresentacion::consumer()
     QByteArray buffer;
     buffer.resize(tcpCliente->bytesAvailable());
     tcpCliente->read(buffer.data(), buffer.size());
-    interpretarMensaje(QString (buffer));
+    interpreter(QString (buffer));
 }
 
-void DialogPresentacion::producer(QString)
+void DialogPresentacion::producer(QString value)
 {
     tcpCliente->write(
                             value.toLatin1().data(),
@@ -90,13 +90,13 @@ void DialogPresentacion::interpreter(QString mensaje)
 
 void DialogPresentacion::cargarLista()
 {
-    if (jsd->isEmpty())
+    if (jsd.isEmpty())
     {
         qDebug() << "El fichero JSON está vacío";
         return;
     }
 
-    QJsonArray jsa = jsd->array();
+    QJsonArray jsa = jsd.array();
     for (int i = 0; i < jsa.count(); i++)
     {
         QJsonObject jso = jsa.at(i).toObject();

@@ -30,7 +30,9 @@ HEADERS  += mainwindow.h \
     dialoglogin.h \
     dialogdocument.h \
     dialogpresentacion.h \
-    DoubleList/tadlist.h
+    DoubleList/tadlist.h \
+    DoubleList/doublelist.h \
+    DoubleList/nodedoublelist.h
 
 FORMS    += mainwindow.ui \
     dialoglogin.ui \
