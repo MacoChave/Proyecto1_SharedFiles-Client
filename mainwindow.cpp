@@ -9,6 +9,8 @@ MainWindow::MainWindow(QWidget *parent) :
     usuario = "";
     limpiarInformacion();
     ui->frmNuevo->setVisible(false);
+
+    conectar();
 }
 
 MainWindow::~MainWindow()
@@ -85,6 +87,10 @@ void MainWindow::interpretarMensaje(QString mensaje)
             msg.setText("El usuario no tiene archivos \n Pulse en 'nuevo' para crear uno");
             msg.exec();
         }
+    }
+    else if (mensaje.startsWith("INFODOC"))
+    {
+        pathTemporal = splMensaje[1];
     }
     else if (mensaje.startsWith("CREATEDOCS"))
     {
