@@ -37,6 +37,7 @@ private:
     QTcpSocket *tcpCliente;
 
     void interpreter(QString mensaje);
+    void conectar();
 };
 
 #endif // DIALOGLOGIN_H

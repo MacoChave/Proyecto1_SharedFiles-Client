@@ -6,6 +6,7 @@ DialogLogin::DialogLogin(QWidget *parent) :
     ui(new Ui::DialogLogin)
 {
     ui->setupUi(this);
+    conectar();
 }
 
 DialogLogin::~DialogLogin()
@@ -58,6 +59,18 @@ void DialogLogin::on_btnLogUp_clicked()
     mensaje.append(correo);
 
     producer(mensaje);
+}
+
+void DialogLogin::conectar()
+{
+    tcpCliente = new QTcpSocket(this);
+    tcpCliente->connectToHost(QHostAddress::LocalHost, 1234);
+    connect(
+                tcpCliente,
+                SIGNAL (readyRead()),
+                this,
+                SLOT (consumer())
+                );
 }
 
 void DialogLogin::consumer()
