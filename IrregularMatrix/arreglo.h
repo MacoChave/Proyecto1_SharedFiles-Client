@@ -11,7 +11,9 @@ public:
     Arreglo(int n[], int m[]);
     ~Arreglo();
 
-    QString &operator [] (int *i);
+    void setDato(QString value, int *indice);
+    QString getDato(int *i);
+    int getLoc(int *indice);
 };
 
 #endif // ARREGLO_H

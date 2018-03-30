@@ -22,7 +22,7 @@ void DialogLienzo::setInfo(QString _filename, QString _permiso)
     filename = _filename;
     if (!filename.isEmpty())
     {
-        producer("INFOIMG^" + _permiso);
+        producer("INFODOC^" + filename);
     }
 }
 
@@ -59,7 +59,7 @@ void DialogLienzo::interpreter(QString mensaje)
     QStringList splMensaje = mensaje.split("^");
     qDebug() << "LIENZO " << splMensaje;
 
-    if (mensaje.startsWith("INFOIMG"))
+    if (mensaje.startsWith("INFODOC"))
     {
         if (splMensaje.size() > 1)
         {
@@ -100,28 +100,36 @@ void DialogLienzo::cargarMatriz()
         QJsonObject jso_bloque = jsa.at(i).toObject();
 
         color = jso_bloque["color"].toString();
-        from_i = jso_bloque["fila"].toInt();
-        from_j = jso_bloque["columna"].toInt();
 
-        pintar(color, from_i, from_j);
+        if (jso_bloque["fila"].isUndefined() || jso_bloque["fila"].isNull())
+        {
+            from_i = jso_bloque["fila_inicial"].toInt();
+            from_j = jso_bloque["columna_inicial"].toInt();
 
-        from_i = jso_bloque["fila_inicial"].toInt();
-        from_j = jso_bloque["columna_inicial"].toInt();
+            to_i = jso_bloque["fila_final"].toInt();
+            to_j = jso_bloque["columna_final"].toInt();
 
-        to_i = jso_bloque["fila_final"].toInt();
-        to_j = jso_bloque["columna_final"].toInt();
+            pintar(color, from_i, from_j, to_i, to_j);
+        }
+        else
+        {
+            from_i = jso_bloque["fila"].toInt();
+            from_j = jso_bloque["columna"].toInt();
 
-        pintar(color, from_i, from_j, to_i, to_j);
+            pintar(color, from_i, from_j);
+        }
+
     }
 }
 
 void DialogLienzo::pintar(QString color, int i, int j)
 {
     int *pos = new int[2];
+
     pos[0] = i;
     pos[1] = j;
 
-    arreglo[pos] = color;
+    arreglo->setDato(color, pos);
 }
 
 void DialogLienzo::pintar(QString color, int from_i, int from_j, int to_i, int to_j)
@@ -134,7 +142,7 @@ void DialogLienzo::pintar(QString color, int from_i, int from_j, int to_i, int t
             pos[0] = x;
             pos[1] = y;
 
-            arreglo[pos] = color;
+            arreglo->setDato(color, pos);
         }
     }
 }

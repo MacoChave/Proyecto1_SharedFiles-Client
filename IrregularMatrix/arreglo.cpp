@@ -27,17 +27,23 @@ Arreglo::~Arreglo()
     alfa = 0;
 }
 
-QString &Arreglo::operator [](int *i)
+void Arreglo::setDato(QString value, int *indice)
 {
-    int loc = 0;
+//    int loc = getLoc(indice);
+}
 
-    /*
-     * LOC(i,j) = (i - i_inf) * J + (j - j_inf)
-     */
-    int dim_j = 0;
-    dim_j = m[1] - n[1];
+QString Arreglo::getDato(int *i)
+{
+//    int loc = getLoc(indice);
 
-    loc = (i[0] - n[0])*dim_j + (i[1] - n[1]);
+    return "";
+}
 
-    return alfa[loc];
+int Arreglo::getLoc(int *indice)
+{
+    int dim_j = m[1] - n[1];
+    int i = indice[0] - n[0];
+    int j = indice[1] - n[1];
+
+    return dim_j * i + j;
 }
