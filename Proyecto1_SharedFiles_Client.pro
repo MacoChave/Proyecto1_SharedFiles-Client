@@ -19,7 +19,9 @@ SOURCES += main.cpp\
     dialoglogin.cpp \
     dialogdocument.cpp \
     dialogpresentacion.cpp \
-    DoubleList/tadlist.cpp
+    DoubleList/tadlist.cpp \
+    dialoglienzo.cpp \
+    IrregularMatrix/arreglo.cpp
 
 HEADERS  += mainwindow.h \
     List/list.h \
@@ -31,10 +33,11 @@ HEADERS  += mainwindow.h \
     dialogdocument.h \
     dialogpresentacion.h \
     DoubleList/tadlist.h \
-    DoubleList/doublelist.h \
-    DoubleList/nodedoublelist.h
+    dialoglienzo.h \
+    IrregularMatrix/arreglo.h
 
 FORMS    += mainwindow.ui \
     dialoglogin.ui \
     dialogdocument.ui \
-    dialogpresentacion.ui
+    dialogpresentacion.ui \
+    dialoglienzo.ui

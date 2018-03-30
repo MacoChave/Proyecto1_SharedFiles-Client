@@ -239,7 +239,10 @@ void MainWindow::on_btnVer_clicked()
     }
     else if (tipo.compare("Lienzo") == 0)
     {
-
+        DialogLienzo l(this);
+        l.setWindowTitle("Editor de imagenes");
+        l.setInfo(filename, permiso);
+        l.exec();
     }
     else
     {
@@ -280,7 +283,7 @@ void MainWindow::on_btnPresentacion_clicked()
     tcpCliente = NULL;
     
     DialogPresentacion p(this);
-    p.setWindowTitle("Editor de Presentaciones");
+    p.setWindowTitle("Editor de presentaciones");
     p.exec();
 
     conectar();
@@ -291,6 +294,11 @@ void MainWindow::on_btnPresentacion_clicked()
 void MainWindow::on_btnLienzo_clicked()
 {
     tcpCliente = NULL;
+
+    DialogLienzo l(this);
+    l.setWindowTitle("Editor de imagenes");
+    l.exec();
+
     conectar();
     on_btnActualizar_clicked();
     ui->frmNuevo->setVisible(false);
