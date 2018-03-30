@@ -9,7 +9,7 @@ DialogPresentacion::DialogPresentacion(QWidget *parent) :
     usuario = "";
     filename = "";
     permiso = "";
-    lista = new DoubleList<TADList *>();
+    lista = new List<TADList *>();
 
     conectar();
 }

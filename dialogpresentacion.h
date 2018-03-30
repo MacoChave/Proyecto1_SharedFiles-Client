@@ -14,7 +14,7 @@
 #include <QJsonArray>
 #include <QJsonValue>
 
-#include "DoubleList/doublelist.h"
+#include "List/list.h"
 #include "DoubleList/tadlist.h"
 
 namespace Ui {
@@ -70,7 +70,7 @@ private:
     QString filename;
     QString permiso;
     QTcpSocket *tcpCliente;
-    DoubleList<TADList *> *lista;
+    List<TADList *> *lista;
 
     QJsonDocument jsd;
 
