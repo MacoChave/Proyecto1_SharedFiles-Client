@@ -4,6 +4,7 @@
 
 class TADList
 {
+    int id;
     int layout;
     QString titulo;
     QString contenido;
@@ -18,6 +19,8 @@ public:
         TITULO, COMPLETO, DOBLE
     };
 
+    void setId(int value);
+    int getId();
     void setLayout(int value);
     int getlayout();
     void setTitulo(QString value);

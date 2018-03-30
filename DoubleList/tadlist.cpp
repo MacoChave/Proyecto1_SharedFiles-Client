@@ -2,6 +2,7 @@
 
 TADList::TADList()
 {
+    id = 0;
     layout = 0;
     titulo = "";
     contenido = "";
@@ -11,11 +12,22 @@ TADList::TADList()
 
 TADList::~TADList()
 {
+    id = 0;
     layout = 0;
     titulo.clear();
     contenido.clear();
     imagen1.clear();
     imagen2.clear();
+}
+
+void TADList::setId(int value)
+{
+    id = value;
+}
+
+int TADList::getId()
+{
+    return id;
 }
 
 void TADList::setLayout(int value)
@@ -96,7 +108,7 @@ QString TADList::toString()
 QString TADList::getNodeName()
 {
     QString name("node");
-    name.append(titulo);
+    name.append(QString::number(id));
 
     return name;
 }
@@ -105,7 +117,7 @@ QString TADList::createNode()
 {
     QString node;
     node.append(getNodeName());
-    node.append(" label [\"");
+    node.append(" [label = \"");
     node.append(toString());
     node.append("\"];\n");
 

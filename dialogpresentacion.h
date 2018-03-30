@@ -2,6 +2,8 @@
 #define DIALOGPRESENTACION_H
 
 #include <QDialog>
+#include <QFile>
+#include <QTextStream>
 #include <QFileDialog>
 #include <QTcpSocket>
 #include <QHostAddress>
@@ -27,7 +29,7 @@ public:
     explicit DialogPresentacion(QWidget *parent = 0);
     ~DialogPresentacion();
 
-    void setInfo(QString _filename, QString _permiso, int layout);
+    void setInfo(QString _filename, QString _permiso);
 
     void producer(QString value);
 

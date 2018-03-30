@@ -19,26 +19,14 @@ DialogPresentacion::~DialogPresentacion()
     delete ui;
 }
 
-void DialogPresentacion::setInfo(QString _filename, QString _permiso, int layout)
+void DialogPresentacion::setInfo(QString _filename, QString _permiso)
 {
     filename = _filename;
     permiso = _permiso;
 
-    switch (layout) {
-    case 0:
-        on_btnTitulo_clicked();
-        break;
-    case 1:
-        on_btnCompleta_clicked();
-        break;
-    case 2:
-        on_btnDoble_clicked();
-        break;
-    }
-
     if (!filename.isEmpty())
     {
-        QString mensaje("INFOPPT^");
+        QString mensaje("INFODOC^");
         mensaje.append(filename);
 
         producer(mensaje);
@@ -78,11 +66,11 @@ void DialogPresentacion::interpreter(QString mensaje)
     QStringList splMensaje = mensaje.split("^");
     qDebug() << splMensaje;
 
-    if (mensaje.startsWith("INFOPPT"))
+    if (mensaje.startsWith("INFODOC"))
     {
         if (splMensaje.size() > 1)
         {
-            jsd = QJsonDocument::fromJson(splMensaje[2].toUtf8());
+            jsd = QJsonDocument::fromJson(splMensaje[1].toUtf8());
             cargarLista();
         }
     }
@@ -102,6 +90,7 @@ void DialogPresentacion::cargarLista()
         QJsonObject jso = jsa.at(i).toObject();
         TADList *tadLista = new TADList();
         tadLista->setTitulo(jso["titulo"].toString());
+        tadLista->setId(lista->size());
 
         QString layout = jso["layout"].toString();
         if (layout.compare("titulo") == 0)
@@ -122,6 +111,8 @@ void DialogPresentacion::cargarLista()
         }
 
         lista->push_back(tadLista);
+
+        qDebug() << "Item agregado " << tadLista->getTitulo();
     }
 }
 
@@ -211,7 +202,22 @@ void DialogPresentacion::on_btnCancelar_clicked()
 
 void DialogPresentacion::on_btnGrafico_clicked()
 {
-    lista->graph();
+    QString contenido = lista->graph();
+    QFile file("listita.dot");
+    if (file.open(QFile::WriteOnly | QFile::Text))
+    {
+        QTextStream out(&file);
+        out << "digraph listita {\n";
+        out << "node [shape = \"box\"]\n";
+        out << "rankdir = LR;\n";
+        flush(out);
+        out << contenido;
+        flush(out);
+        out << "\n}\n";
+        flush(out);
+
+        file.close();
+    }
 }
 
 void DialogPresentacion::on_btnPDF_clicked()

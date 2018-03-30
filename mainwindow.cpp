@@ -243,7 +243,10 @@ void MainWindow::on_btnVer_clicked()
     }
     else
     {
-
+        DialogPresentacion p(this);
+        p.setWindowTitle("Editor de presentacion");
+        p.setInfo(filename, permiso);
+        p.exec();
     }
 
     conectar();
