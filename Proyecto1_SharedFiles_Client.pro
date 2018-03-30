@@ -17,7 +17,9 @@ SOURCES += main.cpp\
     GenericTree/nodegenerictree.cpp \
     GenericTree/tadgenerictree.cpp \
     dialoglogin.cpp \
-    dialogdocument.cpp
+    dialogdocument.cpp \
+    dialoglienzo.cpp \
+    IrregularMatrix/arreglo.cpp
 
 HEADERS  += mainwindow.h \
     List/list.h \
@@ -26,8 +28,11 @@ HEADERS  += mainwindow.h \
     GenericTree/nodegenerictree.h \
     GenericTree/tadgenerictree.h \
     dialoglogin.h \
-    dialogdocument.h
+    dialogdocument.h \
+    dialoglienzo.h \
+    IrregularMatrix/arreglo.h
 
 FORMS    += mainwindow.ui \
     dialoglogin.ui \
-    dialogdocument.ui
+    dialogdocument.ui \
+    dialoglienzo.ui

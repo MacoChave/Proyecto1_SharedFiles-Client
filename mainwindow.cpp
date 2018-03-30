@@ -246,5 +246,12 @@ void MainWindow::on_btnPresentacion_clicked()
 
 void MainWindow::on_btnLienzo_clicked()
 {
+    tcpCliente = NULL;
+    DialogLogin l(this);
+    l.setWindowTitle("Editor de lienzo");
+    l.exec();
 
+    conectar();
+    on_btnActualizar_clicked();
+    ui->frmNuevo->setVisible(false);
 }
