@@ -2,9 +2,12 @@
 #define DIALOGLIENZO_H
 
 #include <QDialog>
+#include <QFile>
+#include <QTextStream>
 #include <QTcpSocket>
 #include <QHostAddress>
 #include <QDebug>
+#include <QRegExp>
 
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -33,6 +36,8 @@ private slots:
     void producer(QString value);
 
     void on_btnComando_clicked();
+
+    void on_btnGenerarPNG_clicked();
 
 private:
     Ui::DialogLienzo *ui;

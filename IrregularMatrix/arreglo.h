@@ -1,6 +1,7 @@
 #ifndef ARREGLO_H
 #define ARREGLO_H
 #include <QString>
+#include <QDebug>
 
 class Arreglo
 {
@@ -12,8 +13,9 @@ public:
     ~Arreglo();
 
     void setDato(QString value, int *indice);
-    QString getDato(int *i);
+    QString getDato(int *indice);
     int getLoc(int *indice);
+    QString graph();
 };
 
 #endif // ARREGLO_H

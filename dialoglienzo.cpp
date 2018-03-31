@@ -15,6 +15,7 @@ DialogLienzo::DialogLienzo(QWidget *parent) :
 DialogLienzo::~DialogLienzo()
 {
     delete ui;
+    delete arreglo;
 }
 
 void DialogLienzo::setInfo(QString _filename, QString _permiso)
@@ -124,30 +125,81 @@ void DialogLienzo::cargarMatriz()
 
 void DialogLienzo::pintar(QString color, int i, int j)
 {
+    qDebug() << "i = " << i << " j = " << j;
     int *pos = new int[2];
 
     pos[0] = i;
     pos[1] = j;
 
     arreglo->setDato(color, pos);
+//    int loc = arreglo->getLoc(pos);
+//    qDebug() << "loc (" << i << ", " << j << ") -> " << loc;
 }
 
 void DialogLienzo::pintar(QString color, int from_i, int from_j, int to_i, int to_j)
 {
-    for (int x = from_i; x < to_i; x++)
+    qDebug() << "i = " << from_i << " - " << to_i << " j = " << from_j << " - " << to_j;
+    for (int i = from_i; i <= to_i; i++)
     {
-        for (int y = from_j; y < to_j; y++)
+        for (int j = from_j; j <= to_j; j++)
         {
             int *pos = new int[2];
-            pos[0] = x;
-            pos[1] = y;
+            pos[0] = i;
+            pos[1] = j;
 
             arreglo->setDato(color, pos);
+//            int loc = arreglo->getLoc(pos);
+//            qDebug() << "loc (" << i << ", " << j << ") -> " << loc;
         }
     }
+
 }
 
 void DialogLienzo::on_btnComando_clicked()
 {
+    QString comando = ui->edtComando->text();
+    if (comando.isEmpty())
+        return;
 
+//    <COLOR><FROM I><FROMJ><TO I><TO J>
+//    <COLOR><I><J>
+    QRegExp rg("< | <> | >");
+    QStringList cmdParser = ui->edtComando->text().split(rg);
+    qDebug() << cmdParser;
+//    QString color;
+//    int from_i, from_j = 0;
+//    int to_i, to_j = 0;
+}
+
+void DialogLienzo::on_btnGenerarPNG_clicked()
+{
+//    digraph lienzo {
+    QString texto("digraph lienzo {\n");
+//        node [shape = plaintext]
+    texto.append("node [shape = plaintext]\n");
+//        struct1 [label =
+    texto.append("struct1 [label = \n");
+//            <<TABLE BORDER = "0" CELLBORDER = "1" CELLSPACING = "0">
+    texto.append("<<TABLE BORDER = \"1\" CELLBORDER = \"0\" CELLSPACING = \"0\">\n");
+//                #CONTENIDO
+    texto.append(arreglo->graph());
+//            </TABLE>>
+    texto.append("</TABLE>>\n");
+//        ]
+//    }
+    texto.append("]\n}");
+
+    QFile file("lienzo.dot");
+    if (file.open(QFile::WriteOnly | QFile::Text))
+    {
+        QTextStream out(&file);
+        out << texto;
+        flush(out);
+        file.close();
+        qDebug() << "Imagen PNG creado";
+    }
+    else
+        qDebug() << "No se pudo crear la imagen png";
+
+    system("dot -Tpng lienzo.dot -o lienzo.png");
 }
