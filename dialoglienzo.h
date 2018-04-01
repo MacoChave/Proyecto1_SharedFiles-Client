@@ -7,7 +7,8 @@
 #include <QTcpSocket>
 #include <QHostAddress>
 #include <QDebug>
-#include <QRegExp>
+#include <QImage>
+#include <QDate>
 
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -39,6 +40,12 @@ private slots:
 
     void on_btnGenerarPNG_clicked();
 
+    void on_btnCrear_clicked();
+
+    void on_btnGuardar_clicked();
+
+    void on_btnEliminar_clicked();
+
 private:
     Ui::DialogLienzo *ui;
     QString filename;
@@ -53,6 +60,8 @@ private:
     void cargarMatriz();
     void pintar(QString color, int i, int j);
     void pintar(QString color, int from_i, int from_j, int to_i, int to_j);
+    void comandoIn(bool mostrar);
+    void seteartDimension(bool mostrar);
 };
 
 #endif // DIALOGLIENZO_H

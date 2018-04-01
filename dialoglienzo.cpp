@@ -9,6 +9,9 @@ DialogLienzo::DialogLienzo(QWidget *parent) :
     arreglo = NULL;
     filename = "";
 
+    comandoIn(false);
+    seteartDimension(true);
+
     conectar();
 }
 
@@ -18,6 +21,20 @@ DialogLienzo::~DialogLienzo()
     delete arreglo;
 }
 
+void DialogLienzo::comandoIn(bool mostrar)
+{
+    ui->lblComando->setVisible(mostrar);
+    ui->edtComando->setVisible(mostrar);
+    ui->btnComando->setVisible(mostrar);
+}
+
+void DialogLienzo::seteartDimension(bool mostrar)
+{
+    ui->edtX->setEnabled(mostrar);
+    ui->edtY->setEnabled(mostrar);
+    ui->btnCrear->setVisible(mostrar);
+}
+
 void DialogLienzo::setInfo(QString _filename, QString _permiso)
 {
     filename = _filename;
@@ -25,6 +42,8 @@ void DialogLienzo::setInfo(QString _filename, QString _permiso)
     {
         producer("INFODOC^" + filename);
     }
+
+    seteartDimension(false);
 }
 
 void DialogLienzo::conectar()
@@ -119,8 +138,9 @@ void DialogLienzo::cargarMatriz()
 
             pintar(color, from_i, from_j);
         }
-
     }
+
+    comandoIn(true);
 }
 
 void DialogLienzo::pintar(QString color, int i, int j)
@@ -132,8 +152,6 @@ void DialogLienzo::pintar(QString color, int i, int j)
     pos[1] = j;
 
     arreglo->setDato(color, pos);
-//    int loc = arreglo->getLoc(pos);
-//    qDebug() << "loc (" << i << ", " << j << ") -> " << loc;
 }
 
 void DialogLienzo::pintar(QString color, int from_i, int from_j, int to_i, int to_j)
@@ -148,11 +166,8 @@ void DialogLienzo::pintar(QString color, int from_i, int from_j, int to_i, int t
             pos[1] = j;
 
             arreglo->setDato(color, pos);
-//            int loc = arreglo->getLoc(pos);
-//            qDebug() << "loc (" << i << ", " << j << ") -> " << loc;
         }
     }
-
 }
 
 void DialogLienzo::on_btnComando_clicked()
@@ -161,32 +176,81 @@ void DialogLienzo::on_btnComando_clicked()
     if (comando.isEmpty())
         return;
 
-//    <COLOR><FROM I><FROMJ><TO I><TO J>
-//    <COLOR><I><J>
-    QRegExp rg("< | <> | >");
-    QStringList cmdParser = ui->edtComando->text().split(rg);
+    QStringList cmdParser = comando.split(",");
     qDebug() << cmdParser;
-//    QString color;
-//    int from_i, from_j = 0;
-//    int to_i, to_j = 0;
+    QString color;
+    int x0 = 0;
+    int y0 = 0;
+
+    color = cmdParser[0];
+    x0 = cmdParser[1].toInt();
+    y0 = cmdParser[2].toInt();
+
+    if (cmdParser.count() > 3)
+    {
+        int x1;
+        int y1;
+
+        x1 = cmdParser[3].toInt();
+        y1 = cmdParser[4].toInt();
+        pintar(color, x0, y0, x1, y1);
+    }
+    else
+        pintar(color, x0, y0);
+
+    on_btnGenerarPNG_clicked();
+}
+
+void DialogLienzo::on_btnCrear_clicked()
+{
+    int *n = new int[2]; // LIMITES INFERIORES
+    int *m = new int[2]; // LIMITES SUPERIORES
+
+    QString x, y;
+    x = ui->edtX->text();
+    y = ui->edtY->text();
+
+    QStringList split = x.split(",");
+    n[0] = split[0].toInt();
+    m[0] = split[1].toInt();
+
+    split.clear();
+    split = y.split(",");
+    n[1] = split[0].toInt();
+    m[1] = split[1].toInt();
+
+    arreglo = new Arreglo(n, m);
+
+    seteartDimension(false);
+    comandoIn(true);
+}
+
+void DialogLienzo::on_btnGuardar_clicked()
+{
+//    filename
+//    tipo
+//    fecha (yy-MM-dd)
+//    contenido
+    QString tipo("lienzo");
+    QString fecha(QDate::currentDate().toString("yy-MM-dd"));
+    QString contenido;
+}
+
+void DialogLienzo::on_btnEliminar_clicked()
+{
+
 }
 
 void DialogLienzo::on_btnGenerarPNG_clicked()
 {
-//    digraph lienzo {
     QString texto("digraph lienzo {\n");
-//        node [shape = plaintext]
     texto.append("node [shape = plaintext]\n");
-//        struct1 [label =
     texto.append("struct1 [label = \n");
-//            <<TABLE BORDER = "0" CELLBORDER = "1" CELLSPACING = "0">
     texto.append("<<TABLE BORDER = \"1\" CELLBORDER = \"0\" CELLSPACING = \"0\">\n");
-//                #CONTENIDO
+
     texto.append(arreglo->graph());
-//            </TABLE>>
+
     texto.append("</TABLE>>\n");
-//        ]
-//    }
     texto.append("]\n}");
 
     QFile file("lienzo.dot");
@@ -202,4 +266,7 @@ void DialogLienzo::on_btnGenerarPNG_clicked()
         qDebug() << "No se pudo crear la imagen png";
 
     system("dot -Tpng lienzo.dot -o lienzo.png");
+    QImage image;
+    image.load("lienzo.png");
+    ui->lblImagen->setPixmap(QPixmap::fromImage(image).scaled(ui->lblImagen->width(), ui->lblImagen->height(), Qt::KeepAspectRatio));
 }

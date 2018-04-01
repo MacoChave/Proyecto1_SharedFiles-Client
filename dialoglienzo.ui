@@ -33,7 +33,7 @@
     <item>
      <widget class="QLineEdit" name="edtComando">
       <property name="placeholderText">
-       <string>&lt;COLOR HEXADECIMAL&gt;&lt;i&gt;&lt;j&gt;[&lt;i_&gt;&lt;j_&gt;]</string>
+       <string>&lt;COLOR&gt;,([&lt;i&gt;,&lt;j&gt;]|[&lt;de i&gt;,&lt;de j&gt;,&lt;a i&gt;,&lt;a j&gt;]</string>
       </property>
      </widget>
     </item>
@@ -46,17 +46,85 @@
     </item>
    </layout>
   </widget>
-  <widget class="QPushButton" name="btnGenerarPNG">
+  <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
-     <x>507</x>
+     <x>21</x>
      <y>50</y>
-     <width>111</width>
-     <height>28</height>
+     <width>601</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <layout class="QHBoxLayout" name="horizontalLayout_2">
+    <item>
+     <widget class="QLabel" name="lblX">
+      <property name="text">
+       <string>x</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLineEdit" name="edtX">
+      <property name="placeholderText">
+       <string>(x_0,x_1)</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLabel" name="lblY">
+      <property name="text">
+       <string>y</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLineEdit" name="edtY">
+      <property name="placeholderText">
+       <string>(y_0,y_1)</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="btnCrear">
+      <property name="text">
+       <string>Crear</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="btnGuardar">
+      <property name="text">
+       <string>Guardar</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="btnEliminar">
+      <property name="text">
+       <string>Eliminar</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="btnGenerarPNG">
+      <property name="text">
+       <string>Generar PNG</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QLabel" name="lblImagen">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>100</y>
+     <width>601</width>
+     <height>361</height>
     </rect>
    </property>
    <property name="text">
-    <string>Generar PNG</string>
+    <string/>
    </property>
   </widget>
  </widget>
