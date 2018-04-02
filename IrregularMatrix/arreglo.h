@@ -14,6 +14,10 @@ public:
 
     void setDato(QString value, int *indice);
     QString getDato(int *indice);
+    int getIMin();
+    int getIMax();
+    int getJMin();
+    int getJMax();
     int getLoc(int *indice);
     QString graph();
 };

@@ -43,6 +43,26 @@ QString Arreglo::getDato(int *indice)
     return alfa[loc];
 }
 
+int Arreglo::getIMin()
+{
+    return n[0];
+}
+
+int Arreglo::getIMax()
+{
+    return m[0];
+}
+
+int Arreglo::getJMin()
+{
+    return n[1];
+}
+
+int Arreglo::getJMax()
+{
+    return m[1];
+}
+
 int Arreglo::getLoc(int *indice)
 {
     int dim_j = (m[1] - n[1]) + 1;
@@ -59,12 +79,10 @@ QString Arreglo::graph()
 
     for (int i = n[0]; i <= m[0]; i++)
     {
-//        <TR>
         texto.append("<TR>\n");
         for (int j = n[1]; j <= m[1]; j++)
         {
-//            <TD bgcolor = "#1d1d1d">
-            texto.append("<TD bgcolor = \"");
+            texto.append("<TD WIDTH = \"20\" HEIGHT = \"20\" bgcolor = \"");
 
             int *indice = new int[2];
             indice[0] = i;
@@ -72,19 +90,14 @@ QString Arreglo::graph()
             QString value = getDato(indice);
 
             if (!value.isEmpty())
-            {
                 texto.append(value);
-            }
             else
-            {
                 texto.append("#FFFFFF");
-            }
 
             texto.append("\">");
-//            </TD>
             texto.append("</TD>\n");
         }
-//        </TR>
+
         texto.append("</TR>\n");
     }
 

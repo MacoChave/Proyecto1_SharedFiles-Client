@@ -9,6 +9,8 @@
 #include <QDebug>
 #include <QImage>
 #include <QDate>
+#include <QInputDialog>
+#include <QDir>
 
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -49,6 +51,7 @@ private slots:
 private:
     Ui::DialogLienzo *ui;
     QString filename;
+    QString permiso;
     Arreglo *arreglo;
 
     QJsonDocument jsd;
@@ -62,6 +65,7 @@ private:
     void pintar(QString color, int from_i, int from_j, int to_i, int to_j);
     void comandoIn(bool mostrar);
     void seteartDimension(bool mostrar);
+    QString crearJSON();
 };
 
 #endif // DIALOGLIENZO_H

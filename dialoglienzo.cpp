@@ -21,6 +21,9 @@ DialogLienzo::~DialogLienzo()
     delete arreglo;
 }
 
+/***********************************************************************************
+ * SETEAR PRIMERA INFORMACION
+ **********************************************************************************/
 void DialogLienzo::comandoIn(bool mostrar)
 {
     ui->lblComando->setVisible(mostrar);
@@ -38,14 +41,17 @@ void DialogLienzo::seteartDimension(bool mostrar)
 void DialogLienzo::setInfo(QString _filename, QString _permiso)
 {
     filename = _filename;
+    permiso = _permiso;
+
     if (!filename.isEmpty())
-    {
         producer("INFODOC^" + filename);
-    }
 
     seteartDimension(false);
 }
 
+/***********************************************************************************
+ * MANEJO DE CONEXION CLIENTE
+ **********************************************************************************/
 void DialogLienzo::conectar()
 {
     tcpCliente = new QTcpSocket(this);
@@ -89,6 +95,9 @@ void DialogLienzo::interpreter(QString mensaje)
     }
 }
 
+/***********************************************************************************
+ * MANEJO DE ARCHIVO JSON
+ **********************************************************************************/
 void DialogLienzo::cargarMatriz()
 {
     if (jsd.isEmpty())
@@ -143,6 +152,53 @@ void DialogLienzo::cargarMatriz()
     comandoIn(true);
 }
 
+QString DialogLienzo::crearJSON()
+{
+    int iMin = arreglo->getIMin();
+    int jMin = arreglo->getJMin();
+    int iMax = arreglo->getIMax();
+    int jMax = arreglo->getJMax();
+
+    QJsonObject rootJSO;
+    rootJSO.insert("lienzo_fila_inf", iMin);
+    rootJSO.insert("lienzo_fila_sup", iMax);
+    rootJSO.insert("lienzo_columna_inf", jMin);
+    rootJSO.insert("lienzo_columna_sup", jMax);
+
+    QJsonArray jsa;
+    for (int i = iMin; i <= iMax; i++)
+    {
+        for (int j = jMin; j <= jMax; j++)
+        {
+            QJsonObject jso;
+            int indice[2];
+            QString color;
+            indice[0] = i;
+            indice[1] = j;
+
+            color = arreglo->getDato(indice);
+            if (color.isEmpty())
+                continue;
+
+            jso.insert("color", QJsonValue::fromVariant(color));
+            jso.insert("fila", QJsonValue::fromVariant(i));
+            jso.insert("columna", QJsonValue::fromVariant(j));
+
+            jsa.push_back(jso);
+        }
+    }
+
+    rootJSO.insert("lienzo_bloques", jsa);
+    jsd.setObject(rootJSO);
+
+    QString strJSON(jsd.toJson());
+
+    return strJSON;
+}
+
+/***********************************************************************************
+ * PINTAR EN MATRIZ
+ **********************************************************************************/
 void DialogLienzo::pintar(QString color, int i, int j)
 {
     qDebug() << "i = " << i << " j = " << j;
@@ -170,6 +226,9 @@ void DialogLienzo::pintar(QString color, int from_i, int from_j, int to_i, int t
     }
 }
 
+/***********************************************************************************
+ * ACCIONES DE BOTONES
+ **********************************************************************************/
 void DialogLienzo::on_btnComando_clicked()
 {
     QString comando = ui->edtComando->text();
@@ -227,18 +286,44 @@ void DialogLienzo::on_btnCrear_clicked()
 
 void DialogLienzo::on_btnGuardar_clicked()
 {
-//    filename
-//    tipo
-//    fecha (yy-MM-dd)
-//    contenido
     QString tipo("lienzo");
-    QString fecha(QDate::currentDate().toString("yy-MM-dd"));
     QString contenido;
+    QString mensaje;
+    contenido = crearJSON();
+
+    if (filename.isEmpty())
+    {
+        bool ok;
+        filename = QInputDialog::getText(
+                    this,
+                    tr("Nombre del archivo"),
+                    tr("Filename:"),
+                    QLineEdit::Normal,
+                    QDir::home().dirName(),
+                    &ok
+                    );
+
+        if (!ok || filename.isEmpty())
+            return;
+
+        mensaje.append("CREATEFILE^");
+    }
+    else
+        mensaje.append("UPDATEFILE^");
+
+    mensaje.append(filename);
+    mensaje.append("^");
+    mensaje.append(permiso);
+    mensaje.append("^");
+    mensaje.append(tipo);
+    mensaje.append("^");
+    mensaje.append(contenido);
+
+    producer(mensaje);
 }
 
 void DialogLienzo::on_btnEliminar_clicked()
 {
-
 }
 
 void DialogLienzo::on_btnGenerarPNG_clicked()
