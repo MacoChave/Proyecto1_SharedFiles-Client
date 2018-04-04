@@ -9,10 +9,10 @@ DialogLienzo::DialogLienzo(QWidget *parent) :
     arreglo = NULL;
     filename = "";
 
-    comandoIn(false);
-    seteartDimension(true);
+    commandIn(false);
+    setDimension(true);
 
-    conectar();
+    connectClient();
 }
 
 DialogLienzo::~DialogLienzo()
@@ -24,14 +24,14 @@ DialogLienzo::~DialogLienzo()
 /***********************************************************************************
  * SETEAR PRIMERA INFORMACION
  **********************************************************************************/
-void DialogLienzo::comandoIn(bool mostrar)
+void DialogLienzo::commandIn(bool mostrar)
 {
     ui->lblComando->setVisible(mostrar);
     ui->edtComando->setVisible(mostrar);
     ui->btnComando->setVisible(mostrar);
 }
 
-void DialogLienzo::seteartDimension(bool mostrar)
+void DialogLienzo::setDimension(bool mostrar)
 {
     ui->edtX->setEnabled(mostrar);
     ui->edtY->setEnabled(mostrar);
@@ -44,15 +44,15 @@ void DialogLienzo::setInfo(QString _filename, QString _permiso)
     permiso = _permiso;
 
     if (!filename.isEmpty())
-        producer("INFODOC^" + filename);
+        producer("INFOFILE^" + filename);
 
-    seteartDimension(false);
+    setDimension(false);
 }
 
 /***********************************************************************************
  * MANEJO DE CONEXION CLIENTE
  **********************************************************************************/
-void DialogLienzo::conectar()
+void DialogLienzo::connectClient()
 {
     tcpCliente = new QTcpSocket(this);
     tcpCliente->connectToHost(QHostAddress::LocalHost, 1234);
@@ -85,20 +85,23 @@ void DialogLienzo::interpreter(QString mensaje)
     QStringList splMensaje = mensaje.split("^");
     qDebug() << "LIENZO " << splMensaje;
 
-    if (mensaje.startsWith("INFODOC"))
+    if (mensaje.startsWith("INFOFILE"))
+        actionInfoFile(splMensaje);
+}
+
+void DialogLienzo::actionInfoFile(QStringList value)
+{
+    if (value.size() > 1)
     {
-        if (splMensaje.size() > 1)
-        {
-            jsd = QJsonDocument::fromJson(splMensaje[1].toUtf8());
-            cargarMatriz();
-        }
+        jsd = QJsonDocument::fromJson(value[1].toUtf8());
+        loadFile();
     }
 }
 
 /***********************************************************************************
  * MANEJO DE ARCHIVO JSON
  **********************************************************************************/
-void DialogLienzo::cargarMatriz()
+void DialogLienzo::loadFile()
 {
     if (jsd.isEmpty())
     {
@@ -138,21 +141,21 @@ void DialogLienzo::cargarMatriz()
             to_i = jso_bloque["fila_final"].toInt();
             to_j = jso_bloque["columna_final"].toInt();
 
-            pintar(color, from_i, from_j, to_i, to_j);
+            paint(color, from_i, from_j, to_i, to_j);
         }
         else
         {
             from_i = jso_bloque["fila"].toInt();
             from_j = jso_bloque["columna"].toInt();
 
-            pintar(color, from_i, from_j);
+            paint(color, from_i, from_j);
         }
     }
 
-    comandoIn(true);
+    commandIn(true);
 }
 
-QString DialogLienzo::crearJSON()
+QString DialogLienzo::createJSON()
 {
     int iMin = arreglo->getIMin();
     int jMin = arreglo->getJMin();
@@ -199,7 +202,7 @@ QString DialogLienzo::crearJSON()
 /***********************************************************************************
  * PINTAR EN MATRIZ
  **********************************************************************************/
-void DialogLienzo::pintar(QString color, int i, int j)
+void DialogLienzo::paint(QString color, int i, int j)
 {
     qDebug() << "i = " << i << " j = " << j;
     int *pos = new int[2];
@@ -210,7 +213,7 @@ void DialogLienzo::pintar(QString color, int i, int j)
     arreglo->setDato(color, pos);
 }
 
-void DialogLienzo::pintar(QString color, int from_i, int from_j, int to_i, int to_j)
+void DialogLienzo::paint(QString color, int from_i, int from_j, int to_i, int to_j)
 {
     qDebug() << "i = " << from_i << " - " << to_i << " j = " << from_j << " - " << to_j;
     for (int i = from_i; i <= to_i; i++)
@@ -252,10 +255,10 @@ void DialogLienzo::on_btnComando_clicked()
 
         x1 = cmdParser[3].toInt();
         y1 = cmdParser[4].toInt();
-        pintar(color, x0, y0, x1, y1);
+        paint(color, x0, y0, x1, y1);
     }
     else
-        pintar(color, x0, y0);
+        paint(color, x0, y0);
 
     on_btnGenerarPNG_clicked();
 }
@@ -280,8 +283,8 @@ void DialogLienzo::on_btnCrear_clicked()
 
     arreglo = new Arreglo(n, m);
 
-    seteartDimension(false);
-    comandoIn(true);
+    setDimension(false);
+    commandIn(true);
 }
 
 void DialogLienzo::on_btnGuardar_clicked()
@@ -289,7 +292,7 @@ void DialogLienzo::on_btnGuardar_clicked()
     QString tipo("lienzo");
     QString contenido;
     QString mensaje;
-    contenido = crearJSON();
+    contenido = createJSON();
 
     if (filename.isEmpty())
     {

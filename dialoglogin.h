@@ -36,6 +36,9 @@ private:
     Ui::DialogLogin *ui;
     QTcpSocket *tcpCliente;
 
+    void actionLogIn(QStringList value);
+    void actionLogUp(QStringList value);
+
     void conectar();
     void interpreter(QString mensaje);
 };

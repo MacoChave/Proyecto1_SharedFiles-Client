@@ -43,12 +43,15 @@ void DialogDocument::setInfo(QString _filename, QString _permiso)
 
     if (!filename.isEmpty())
     {
-        QString msj("INFODOC^");
+        QString msj("INFOFILE^");
         msj.append(filename);
         producer(msj);
     }
 }
 
+/***********************************************************************************
+ * MANEJO DE CONEXION CLIENTE
+ **********************************************************************************/
 void DialogDocument::conectar()
 {
     tcpCliente = new QTcpSocket(this);
@@ -82,16 +85,22 @@ void DialogDocument::interpreter(QString mensaje)
     QStringList splMensaje = mensaje.split("^");
     qDebug() << "DOCUMENTO " << splMensaje;
 
-    if (mensaje.startsWith("INFODOC"))
+    if (mensaje.startsWith("INFOFILE"))
+        actionInfoFile(splMensaje);
+}
+
+void DialogDocument::actionInfoFile(QStringList value)
+{
+    if (value.size() > 1)
     {
-        if (splMensaje.size() > 1)
-        {
-            jsd = QJsonDocument::fromJson(splMensaje[1].toUtf8());
-            cargarArbol();
-        }
+        jsd = QJsonDocument::fromJson(value[1].toUtf8());
+        cargarArbol();
     }
 }
 
+/***********************************************************************************
+ * MANEJO DE ARBOL
+ **********************************************************************************/
 void DialogDocument::cargarArbol()
 {
     if (jsd.isEmpty())
@@ -174,6 +183,9 @@ List<NodeGenericTree *> *DialogDocument::obtenerHijos(QJsonArray currentJSA)
     return list;
 }
 
+/***********************************************************************************
+ * MANEJO DE METODOS
+ **********************************************************************************/
 void DialogDocument::on_btnGuardar_clicked()
 {
 
@@ -181,7 +193,7 @@ void DialogDocument::on_btnGuardar_clicked()
 
 void DialogDocument::on_btnCancelar_clicked()
 {
-    QString peticion("INFODOC^");
+    QString peticion("INFOFILE^");
     peticion.append(filename);
     producer(peticion);
     qDebug() << "PEDIR DOCUMENTO " << peticion;

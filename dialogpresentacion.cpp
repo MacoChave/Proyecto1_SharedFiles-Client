@@ -26,13 +26,16 @@ void DialogPresentacion::setInfo(QString _filename, QString _permiso)
 
     if (!filename.isEmpty())
     {
-        QString mensaje("INFODOC^");
+        QString mensaje("INFOFILE^");
         mensaje.append(filename);
 
         producer(mensaje);
     }
 }
 
+/***********************************************************************************
+ * MANEJO DE CONEXION CLIENTE
+ **********************************************************************************/
 void DialogPresentacion::conectar()
 {
     tcpCliente = new QTcpSocket(this);
@@ -66,16 +69,22 @@ void DialogPresentacion::interpreter(QString mensaje)
     QStringList splMensaje = mensaje.split("^");
     qDebug() << splMensaje;
 
-    if (mensaje.startsWith("INFODOC"))
+    if (mensaje.startsWith("INFOFILE"))
+        actionInfoFile(splMensaje);
+}
+
+void DialogPresentacion::actionInfoFile(QStringList value)
+{
+    if (value.size() > 1)
     {
-        if (splMensaje.size() > 1)
-        {
-            jsd = QJsonDocument::fromJson(splMensaje[1].toUtf8());
-            cargarLista();
-        }
+        jsd = QJsonDocument::fromJson(value[1].toUtf8());
+        cargarLista();
     }
 }
 
+/***********************************************************************************
+ * MANEJO DE ARCHIVO JSON
+ **********************************************************************************/
 void DialogPresentacion::cargarLista()
 {
     if (jsd.isEmpty())
@@ -116,6 +125,9 @@ void DialogPresentacion::cargarLista()
     }
 }
 
+/***********************************************************************************
+ * MANEJO DE ACCIONES
+ **********************************************************************************/
 void DialogPresentacion::on_btnTitulo_clicked()
 {
     ui->lblImagen1->setVisible(false);

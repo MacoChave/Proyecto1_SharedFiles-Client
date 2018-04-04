@@ -58,14 +58,16 @@ private:
 
     QTcpSocket *tcpCliente;
 
-    void conectar();
+    void connectClient();
     void interpreter(QString mensaje);
-    void cargarMatriz();
-    void pintar(QString color, int i, int j);
-    void pintar(QString color, int from_i, int from_j, int to_i, int to_j);
-    void comandoIn(bool mostrar);
-    void seteartDimension(bool mostrar);
-    QString crearJSON();
+    void actionInfoFile(QStringList value);
+
+    void loadFile();
+    void paint(QString color, int i, int j);
+    void paint(QString color, int from_i, int from_j, int to_i, int to_j);
+    void commandIn(bool mostrar);
+    void setDimension(bool mostrar);
+    QString createJSON();
 };
 
 #endif // DIALOGLIENZO_H

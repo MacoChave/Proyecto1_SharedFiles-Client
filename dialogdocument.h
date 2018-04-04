@@ -76,6 +76,7 @@ private:
 
     void conectar();
     void interpreter(QString mensaje);
+    void actionInfoFile(QStringList value);
     void cargarArbol();
     List<NodeGenericTree *> *obtenerHijos(QJsonArray currentJSA);
 };

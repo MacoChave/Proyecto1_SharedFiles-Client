@@ -14,11 +14,94 @@ DialogLogin::~DialogLogin()
     delete ui;
 }
 
-void DialogLogin::setTcp(QTcpSocket *value)
+/***********************************************************************************
+ * MANEJO DE CONEXION CLIENTE
+ **********************************************************************************/
+void DialogLogin::conectar()
 {
-    tcpCliente = value;
+    tcpCliente = new QTcpSocket(this);
+    tcpCliente->connectToHost(QHostAddress::LocalHost, 1234);
+    connect(
+                tcpCliente,
+                SIGNAL (readyRead()),
+                this,
+                SLOT (consumer())
+                );
 }
 
+void DialogLogin::consumer()
+{
+    QByteArray buffer;
+    buffer.resize(tcpCliente->bytesAvailable());
+    tcpCliente->read(buffer.data(), buffer.size());
+    interpreter(QString (buffer));
+}
+
+void DialogLogin::producer(QString value)
+{
+    tcpCliente->write(
+                        value.toLatin1().data(),
+                        value.size()
+                );
+}
+
+void DialogLogin::interpreter(QString mensaje)
+{
+    QStringList splMensaje = mensaje.split("^");
+
+    if (mensaje.startsWith("LOGIN"))
+        actionLogIn(splMensaje);
+    else if (mensaje.startsWith("LOGUP"))
+        actionLogUp(splMensaje);
+}
+
+void DialogLogin::actionLogIn(QStringList value)
+{
+    if (value[1].compare("CORRECTO") == 0)
+    {
+        QMessageBox msg;
+        msg.setWindowTitle("Información");
+        msg.setText("Credenciales correctas");
+        msg.exec();
+
+        accept();
+    }
+    else
+    {
+        QMessageBox msg;
+        msg.setWindowTitle("Información");
+        msg.setText("Credenciales incorrectas");
+        msg.exec();
+
+        return;
+    }
+}
+
+void DialogLogin::actionLogUp(QStringList value)
+{
+    if (value[1].compare("CORRECTO") == 0)
+    {
+        QMessageBox msg;
+        msg.setWindowTitle("Información");
+        msg.setText("Usuario creado satisfactoriamente");
+        msg.exec();
+
+        accept();
+    }
+    else
+    {
+        QMessageBox msg;
+        msg.setWindowTitle("Información");
+        msg.setText("Usuario no creado");
+        msg.exec();
+
+        return;
+    }
+}
+
+/***********************************************************************************
+  MANEJO DE METODOS DE CLIENTE
+ **********************************************************************************/
 void DialogLogin::on_btnLogIn_clicked()
 {
     QString user = ui->edt_Login_Nickname->text();
@@ -61,79 +144,7 @@ void DialogLogin::on_btnLogUp_clicked()
     producer(mensaje);
 }
 
-void DialogLogin::conectar()
+void DialogLogin::setTcp(QTcpSocket *value)
 {
-    tcpCliente = new QTcpSocket(this);
-    tcpCliente->connectToHost(QHostAddress::LocalHost, 1234);
-    connect(
-                tcpCliente,
-                SIGNAL (readyRead()),
-                this,
-                SLOT (consumer())
-                );
-}
-
-void DialogLogin::consumer()
-{
-    QByteArray buffer;
-    buffer.resize(tcpCliente->bytesAvailable());
-    tcpCliente->read(buffer.data(), buffer.size());
-    interpreter(QString (buffer));
-}
-
-void DialogLogin::producer(QString value)
-{
-    tcpCliente->write(
-                        value.toLatin1().data(),
-                        value.size()
-                );
-}
-
-void DialogLogin::interpreter(QString mensaje)
-{
-    QStringList splMensaje = mensaje.split("^");
-    qDebug() << "LOGEO " << splMensaje;
-
-    if (mensaje.startsWith("LOGIN"))
-    {
-        if (splMensaje[1].compare("CORRECTO") == 0)
-        {
-            QMessageBox msg;
-            msg.setWindowTitle("Información");
-            msg.setText("Credenciales correctas");
-            msg.exec();
-
-            accept();
-        }
-        else
-        {
-            QMessageBox msg;
-            msg.setWindowTitle("Información");
-            msg.setText("Credenciales incorrectas");
-            msg.exec();
-
-            return;
-        }
-    }
-    else if (mensaje.startsWith("LOGUP"))
-    {
-        if (splMensaje[1].compare("CORRECTO") == 0)
-        {
-            QMessageBox msg;
-            msg.setWindowTitle("Información");
-            msg.setText("Usuario creado satisfactoriamente");
-            msg.exec();
-
-            accept();
-        }
-        else
-        {
-            QMessageBox msg;
-            msg.setWindowTitle("Información");
-            msg.setText("Usuario no creado");
-            msg.exec();
-
-            return;
-        }
-    }
+    tcpCliente = value;
 }

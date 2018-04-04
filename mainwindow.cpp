@@ -7,10 +7,10 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     usuario = "";
-    limpiarInformacion();
+    clearInformation();
     ui->frmNuevo->setVisible(false);
 
-    conectar();
+    connectClient();
 }
 
 MainWindow::~MainWindow()
@@ -21,7 +21,7 @@ MainWindow::~MainWindow()
 /***********************************************************************************
  * MANEJO DE CONEXION CLIENTE
  **********************************************************************************/
-void MainWindow::conectar()
+void MainWindow::connectClient()
 {
     tcpCliente = new QTcpSocket(this);
     tcpCliente->connectToHost(QHostAddress::LocalHost, 1234);
@@ -38,7 +38,7 @@ void MainWindow::consumer()
     QByteArray buffer;
     buffer.resize(tcpCliente->bytesAvailable());
     tcpCliente->read(buffer.data(), buffer.size());
-    interpretarMensaje(QString (buffer));
+    interpreter(QString (buffer));
 }
 
 void MainWindow::producer(QString value)
@@ -49,130 +49,147 @@ void MainWindow::producer(QString value)
                     );
 }
 
-void MainWindow::interpretarMensaje(QString mensaje)
+void MainWindow::interpreter(QString mensaje)
 {
     QStringList splMensaje = mensaje.split("^");
-    qDebug() << "MAIN WINDOW " << splMensaje;
 
     if (mensaje.startsWith("SESSION"))
+        actionSesion(splMensaje);
+    else if (mensaje.startsWith("LISTFILES"))
+        actionListFiles(splMensaje);
+    else if (mensaje.startsWith("INFOFILE"))
+        actionInfoFile(splMensaje);
+    else if (mensaje.startsWith("CREATEFILE"))
+        actionCreateFile(splMensaje);
+    else if (mensaje.startsWith("UPDATEFILE"))
+        actionUpdateFile(splMensaje);
+    else if (mensaje.startsWith("DELETEFILE"))
+        actionDeleteFile(splMensaje);
+}
+
+void MainWindow::actionSesion(QStringList value)
+{
+    if (value.size() > 1)
     {
-        if (splMensaje.size() > 1)
+        usuario = value[1];
+        ui->lblUsuario->setText(usuario);
+        loadInformation();
+    }
+}
+
+void MainWindow::actionListFiles(QStringList value)
+{
+    if (value.size() > 1)
+    {
+        for (int i = 1; i <= value.size() - 1; i++)
         {
-            usuario = splMensaje[1];
-            ui->lblUsuario->setText(usuario);
-            cargarInformacion();
+            if (value[i].isEmpty())
+                break;
+
+            int y = ui->tblDocumentos->rowCount();
+
+            ui->tblDocumentos->insertRow(y);
+            ui->tblDocumentos->setItem(y, 0, new QTableWidgetItem(value[i++]));
+            ui->tblDocumentos->setItem(y, 1, new QTableWidgetItem(value[i++]));
+            ui->tblDocumentos->setItem(y, 2, new QTableWidgetItem(value[i]));
         }
     }
-    else if (mensaje.startsWith("LISTDOCS"))
+    else
     {
-        if (splMensaje.size() > 1)
-        {
-            for (int i = 1; i <= splMensaje.size() - 1; i++)
-            {
-                if (splMensaje[i].isEmpty())
-                    break;
-
-                int y = ui->tblDocumentos->rowCount();
-
-                ui->tblDocumentos->insertRow(y);
-                ui->tblDocumentos->setItem(y, 0, new QTableWidgetItem(splMensaje[i++]));
-                ui->tblDocumentos->setItem(y, 1, new QTableWidgetItem(splMensaje[i++]));
-                ui->tblDocumentos->setItem(y, 2, new QTableWidgetItem(splMensaje[i]));
-            }
-        }
-        else
-        {
-            QMessageBox msg;
-            msg.setWindowTitle("Información");
-            msg.setText("El usuario no tiene archivos \n Pulse en 'nuevo' para crear uno");
-            msg.exec();
-        }
+        QMessageBox msg;
+        msg.setWindowTitle("Información");
+        msg.setText("El usuario no tiene archivos \n Pulse en 'nuevo' para crear uno");
+        msg.exec();
     }
-    else if (mensaje.startsWith("INFODOC"))
-    {
-        pathTemporal = splMensaje[1];
-    }
-    else if (mensaje.startsWith("CREATEDOCS"))
-    {
-        if (splMensaje[1].compare("CORRECTO") == 0)
-        {
-            QMessageBox msg;
-            msg.setWindowTitle("Información");
-            msg.setText("Documento creado");
-            msg.exec();
+}
 
-            limpiarTabla();
-            producer("LISTDOCS");
-        }
-        else
-        {
-            QMessageBox msg;
-            msg.setWindowTitle("Información");
-            msg.setText("Hubo un error en el servidor al crear el documento");
-            msg.exec();
-        }
-    }
-    else if (mensaje.startsWith("UPDATEDOCS"))
-    {
-        if (splMensaje[1].compare("CORRECTO") == 0)
-        {
-            QMessageBox msg;
-            msg.setWindowTitle("Información");
-            msg.setText("Documento actuallizado");
-            msg.exec();
+void MainWindow::actionInfoFile(QStringList value)
+{
+    pathTemporal = value[1];
+}
 
-            limpiarTabla();
-            producer("LISTDOCS");
-        }
-        else
-        {
-            QMessageBox msg;
-            msg.setWindowTitle("Información");
-            msg.setText("Hubo un error en el servidor al actualizar el documento");
-            msg.exec();
-        }
-    }
-    else if (mensaje.startsWith("DELETEDOCS"))
+void MainWindow::actionCreateFile(QStringList value)
+{
+    if (value[1].compare("CORRECTO") == 0)
     {
-        if (splMensaje[1].compare("CORRECTO") == 0)
-        {
-            QMessageBox msg;
-            msg.setWindowTitle("Información");
-            msg.setText("Documento eliminado");
-            msg.exec();
+        QMessageBox msg;
+        msg.setWindowTitle("Información");
+        msg.setText("Documento creado");
+        msg.exec();
 
-            limpiarTabla();
-            producer("LISTDOCS");
-        }
-        else
-        {
-            QMessageBox msg;
-            msg.setWindowTitle("Información");
-            msg.setText("Hubo un error en el servidor al eliminar el documento");
-            msg.exec();
-        }
+        cleanTable();
+        producer("LISTFILES");
+    }
+    else
+    {
+        QMessageBox msg;
+        msg.setWindowTitle("Información");
+        msg.setText("Hubo un error en el servidor al crear el documento");
+        msg.exec();
+    }
+}
+
+void MainWindow::actionUpdateFile(QStringList value)
+{
+    if (value[1].compare("CORRECTO") == 0)
+    {
+        QMessageBox msg;
+        msg.setWindowTitle("Información");
+        msg.setText("Documento actuallizado");
+        msg.exec();
+
+        cleanTable();
+        producer("LISTFILES");
+    }
+    else
+    {
+        QMessageBox msg;
+        msg.setWindowTitle("Información");
+        msg.setText("Hubo un error en el servidor al actualizar el documento");
+        msg.exec();
+    }
+}
+
+void MainWindow::actionDeleteFile(QStringList value)
+{
+    if (value[1].compare("CORRECTO") == 0)
+    {
+        QMessageBox msg;
+        msg.setWindowTitle("Información");
+        msg.setText("Documento eliminado");
+        msg.exec();
+
+        cleanTable();
+        producer("LISTFILES");
+    }
+    else
+    {
+        QMessageBox msg;
+        msg.setWindowTitle("Información");
+        msg.setText("Hubo un error en el servidor al eliminar el documento");
+        msg.exec();
     }
 }
 
 /***********************************************************************************
  * MANEJO DE UI
  **********************************************************************************/
-void MainWindow::cargarInformacion()
+void MainWindow::loadInformation()
 {
     ui->frmLogin->setVisible(false);
     ui->frmLogout->setVisible(true);
-    producer("LISTDOCS");
+    producer("LISTFILES");
 }
 
-void MainWindow::limpiarInformacion()
+void MainWindow::clearInformation()
 {
     ui->frmLogin->setVisible(true);
     ui->frmLogout->setVisible(false);
 
-    limpiarTabla();
+    cleanTable();
 }
 
-void MainWindow::limpiarTabla()
+void MainWindow::cleanTable()
 {
     ui->tblDocumentos->clear();
     ui->tblDocumentos->setRowCount(0);
@@ -180,8 +197,8 @@ void MainWindow::limpiarTabla()
 
 void MainWindow::on_btnActualizar_clicked()
 {
-    limpiarInformacion();
-    cargarInformacion();
+    clearInformation();
+    loadInformation();
 }
 
 /***********************************************************************************
@@ -193,16 +210,16 @@ void MainWindow::on_btnLogin_clicked()
     l.setWindowTitle("LogIn / LogUp");
     l.exec();
 
-    conectar();
-    producer("SESSION^USUARIO");
+    connectClient();
+    producer("SESSION");
 }
 
 void MainWindow::on_btnLogout_clicked()
 {
-    producer("LOGOUT^SESSION");
+    producer("LOGOUT");
     ui->lblUsuario->clear();
     usuario.clear();
-    limpiarInformacion();
+    clearInformation();
 }
 
 /***********************************************************************************
@@ -252,7 +269,7 @@ void MainWindow::on_btnVer_clicked()
         p.exec();
     }
 
-    conectar();
+    connectClient();
 }
 
 void MainWindow::on_btnNuevo_clicked()
@@ -273,7 +290,7 @@ void MainWindow::on_btnDocumento_clicked()
     d.setWindowTitle("Editor de documentos");
     d.exec();
 
-    conectar();
+    connectClient();
     on_btnActualizar_clicked();
     ui->frmNuevo->setVisible(false);
 }
@@ -286,7 +303,7 @@ void MainWindow::on_btnPresentacion_clicked()
     p.setWindowTitle("Editor de presentaciones");
     p.exec();
 
-    conectar();
+    connectClient();
     on_btnActualizar_clicked();
     ui->frmNuevo->setVisible(false);
 }
@@ -299,7 +316,7 @@ void MainWindow::on_btnLienzo_clicked()
     l.setWindowTitle("Editor de imagenes");
     l.exec();
 
-    conectar();
+    connectClient();
     on_btnActualizar_clicked();
     ui->frmNuevo->setVisible(false);
 }

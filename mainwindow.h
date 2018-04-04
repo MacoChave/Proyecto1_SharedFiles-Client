@@ -55,12 +55,19 @@ private:
     QString pathTemporal;
     QTcpSocket *tcpCliente;
 
-    void conectar();
-    void interpretarMensaje(QString mensaje);
+    void connectClient();
+    void interpreter(QString mensaje);
 
-    void cargarInformacion();
-    void limpiarInformacion();
-    void limpiarTabla();
+    void actionSesion(QStringList value);
+    void actionListFiles(QStringList value);
+    void actionInfoFile(QStringList value);
+    void actionCreateFile(QStringList value);
+    void actionUpdateFile(QStringList value);
+    void actionDeleteFile(QStringList value);
+
+    void loadInformation();
+    void clearInformation();
+    void cleanTable();
 };
 
 #endif // MAINWINDOW_H
