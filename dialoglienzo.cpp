@@ -298,14 +298,17 @@ void DialogLienzo::on_btnCrear_clicked()
     x_min = ui->spnBxDe_x->value();
     x_max = ui->spnBxA_x->value();
 
-    y_max = ui->spnBxDe_y->value();
+    y_min = ui->spnBxDe_y->value();
     y_max = ui->spnBxA_y->value();
 
-    n[0] = ui->spnBxDe_x->value();
-    n[1] = ui->spnBxDe_y->value();
+    qDebug() << "x min: " << x_min << " x max: " << x_max;
+    qDebug() << "y min: " << y_min << " y max: " << y_max;
 
-    m[0] = ui->spnBxA_x->value();
-    m[1] = ui->spnBxA_y->value();
+    n[0] = x_min;
+    n[1] = y_min;
+
+    m[0] = x_max;
+    m[1] = y_max;
 
     arreglo = new Arreglo(n, m);
 

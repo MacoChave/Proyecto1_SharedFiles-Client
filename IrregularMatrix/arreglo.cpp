@@ -33,12 +33,19 @@ Arreglo::~Arreglo()
 void Arreglo::setDato(QString value, int *indice)
 {
     int loc = getLoc(indice);
-    alfa[loc] = value;
+    qDebug() << "Loc(" << indice[0] << ", " << indice[1] << ")";
+
+    if (alfa->size() < loc)
+        alfa[loc] = value;
 }
 
 QString Arreglo::getDato(int *indice)
 {
     int loc = getLoc(indice);
+    qDebug() << "Loc(" << indice[0] << ", " << indice[1] << ")";
+
+    if (alfa->size() > loc)
+        return "";
 
     return alfa[loc];
 }
