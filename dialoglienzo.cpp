@@ -10,7 +10,7 @@ DialogLienzo::DialogLienzo(QWidget *parent) :
     filename = "";
 
     commandIn(false);
-    setDimension(true);
+    setDimension(true, -9999, 9999, -9999, 9999);
 
     connectClient();
 }
@@ -31,10 +31,24 @@ void DialogLienzo::commandIn(bool mostrar)
     ui->btnComando->setVisible(mostrar);
 }
 
-void DialogLienzo::setDimension(bool mostrar)
+void DialogLienzo::setDimension(bool mostrar, int minX, int maxX, int minY, int maxY)
 {
-    ui->edtX->setEnabled(mostrar);
-    ui->edtY->setEnabled(mostrar);
+    ui->spnBxDe_x->setEnabled(mostrar);
+    ui->spnBxDe_x->setMinimum(minX);
+    ui->spnBxDe_x->setMaximum(maxX);
+
+    ui->spnBxA_x->setEnabled(mostrar);
+    ui->spnBxA_x->setMinimum(minX);
+    ui->spnBxA_x->setMaximum(maxX);
+
+    ui->spnBxDe_y->setEnabled(mostrar);
+    ui->spnBxDe_y->setMinimum(minY);
+    ui->spnBxDe_y->setMaximum(maxY);
+
+    ui->spnBxA_y->setEnabled(mostrar);
+    ui->spnBxA_y->setMinimum(minY);
+    ui->spnBxA_y->setMaximum(maxY);
+
     ui->btnCrear->setVisible(mostrar);
 }
 
@@ -45,8 +59,6 @@ void DialogLienzo::setInfo(QString _filename, QString _permiso)
 
     if (!filename.isEmpty())
         producer("INFOFILE^" + filename);
-
-    setDimension(false);
 }
 
 /***********************************************************************************
@@ -153,6 +165,12 @@ void DialogLienzo::loadFile()
     }
 
     commandIn(true);
+    setDimension(false, arreglo->getIMin(), arreglo->getIMax(), arreglo->getJMin(), arreglo->getJMax());
+    ui->spnBxDe_x->setValue(arreglo->getIMin());
+    ui->spnBxA_x->setValue(arreglo->getIMax());
+    ui->spnBxDe_y->setValue(arreglo->getJMin());
+    ui->spnBxA_y->setValue(arreglo->getJMin());
+    loadImage("lienzo.png");
 }
 
 QString DialogLienzo::createJSON()
@@ -229,6 +247,13 @@ void DialogLienzo::paint(QString color, int from_i, int from_j, int to_i, int to
     }
 }
 
+void DialogLienzo::loadImage(QString filepath)
+{
+    QImage image;
+    image.load(filepath);
+    ui->lblImagen->setPixmap(QPixmap::fromImage(image).scaled(ui->lblImagen->width(), ui->lblImagen->height(), Qt::KeepAspectRatio));
+}
+
 /***********************************************************************************
  * ACCIONES DE BOTONES
  **********************************************************************************/
@@ -261,6 +286,7 @@ void DialogLienzo::on_btnComando_clicked()
         paint(color, x0, y0);
 
     on_btnGenerarPNG_clicked();
+    loadImage("lienzo.png");
 }
 
 void DialogLienzo::on_btnCrear_clicked()
@@ -268,28 +294,28 @@ void DialogLienzo::on_btnCrear_clicked()
     int *n = new int[2]; // LIMITES INFERIORES
     int *m = new int[2]; // LIMITES SUPERIORES
 
-    QString x, y;
-    x = ui->edtX->text();
-    y = ui->edtY->text();
+    int x_min, x_max, y_min, y_max;
+    x_min = ui->spnBxDe_x->value();
+    x_max = ui->spnBxA_x->value();
 
-    QStringList split = x.split(",");
-    n[0] = split[0].toInt();
-    m[0] = split[1].toInt();
+    y_max = ui->spnBxDe_y->value();
+    y_max = ui->spnBxA_y->value();
 
-    split.clear();
-    split = y.split(",");
-    n[1] = split[0].toInt();
-    m[1] = split[1].toInt();
+    n[0] = ui->spnBxDe_x->value();
+    n[1] = ui->spnBxDe_y->value();
+
+    m[0] = ui->spnBxA_x->value();
+    m[1] = ui->spnBxA_y->value();
 
     arreglo = new Arreglo(n, m);
 
-    setDimension(false);
+    setDimension(false, n[0], m[0], n[1], m[1]);
     commandIn(true);
 }
 
 void DialogLienzo::on_btnGuardar_clicked()
 {
-    QString tipo("lienzo");
+    QString tipo("Lienzo");
     QString contenido;
     QString mensaje;
     contenido = createJSON();
@@ -354,7 +380,5 @@ void DialogLienzo::on_btnGenerarPNG_clicked()
         qDebug() << "No se pudo crear la imagen png";
 
     system("dot -Tpng lienzo.dot -o lienzo.png");
-    QImage image;
-    image.load("lienzo.png");
-    ui->lblImagen->setPixmap(QPixmap::fromImage(image).scaled(ui->lblImagen->width(), ui->lblImagen->height(), Qt::KeepAspectRatio));
+    loadImage("lienzo.dot");
 }

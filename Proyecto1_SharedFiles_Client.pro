@@ -41,3 +41,5 @@ FORMS    += mainwindow.ui \
     dialogdocument.ui \
     dialogpresentacion.ui \
     dialoglienzo.ui
+
+RESOURCES +=

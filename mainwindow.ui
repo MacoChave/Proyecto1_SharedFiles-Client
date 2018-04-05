@@ -23,6 +23,9 @@
       <height>361</height>
      </rect>
     </property>
+    <property name="styleSheet">
+     <string notr="true">color: rgb(0, 0, 0);</string>
+    </property>
     <property name="showGrid">
      <bool>true</bool>
     </property>
@@ -107,6 +110,9 @@
        <property name="text">
         <string>LogOut</string>
        </property>
+       <property name="flat">
+        <bool>true</bool>
+       </property>
       </widget>
      </item>
     </layout>
@@ -123,6 +129,9 @@
     <property name="text">
      <string>Nuevo</string>
     </property>
+    <property name="flat">
+     <bool>true</bool>
+    </property>
    </widget>
    <widget class="QPushButton" name="btnVer">
     <property name="geometry">
@@ -135,6 +144,9 @@
     </property>
     <property name="text">
      <string>Ver</string>
+    </property>
+    <property name="flat">
+     <bool>true</bool>
     </property>
    </widget>
    <widget class="QPushButton" name="btnEliminar">
@@ -149,6 +161,9 @@
     <property name="text">
      <string>Eliminar</string>
     </property>
+    <property name="flat">
+     <bool>true</bool>
+    </property>
    </widget>
    <widget class="QPushButton" name="btnActualizar">
     <property name="geometry">
@@ -162,13 +177,16 @@
     <property name="text">
      <string>Actualizar</string>
     </property>
+    <property name="flat">
+     <bool>true</bool>
+    </property>
    </widget>
    <widget class="QFrame" name="frmNuevo">
     <property name="geometry">
      <rect>
-      <x>560</x>
-      <y>349</y>
-      <width>131</width>
+      <x>600</x>
+      <y>350</y>
+      <width>51</width>
       <height>131</height>
      </rect>
     </property>
@@ -183,12 +201,29 @@
       <rect>
        <x>10</x>
        <y>10</y>
-       <width>111</width>
+       <width>31</width>
        <height>28</height>
       </rect>
      </property>
+     <property name="font">
+      <font>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">border-style: solid;
+border-width: 1px;
+border-color: rgb(0, 51, 102);
+background-color: rgb(30, 33, 36, 180);
+color: rgb(255, 255, 255);
+border-radius: 14px;</string>
+     </property>
      <property name="text">
-      <string>Documento</string>
+      <string>D</string>
+     </property>
+     <property name="flat">
+      <bool>true</bool>
      </property>
     </widget>
     <widget class="QPushButton" name="btnPresentacion">
@@ -196,12 +231,29 @@
       <rect>
        <x>10</x>
        <y>50</y>
-       <width>111</width>
-       <height>28</height>
+       <width>30</width>
+       <height>30</height>
       </rect>
      </property>
+     <property name="font">
+      <font>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">border-style: solid;
+border-width: 1px;
+border-color: rgb(0, 51, 102);
+background-color: rgb(30, 33, 36, 180);
+color: rgb(255, 255, 255);
+border-radius: 14px;</string>
+     </property>
      <property name="text">
-      <string>Presentacion</string>
+      <string>P</string>
+     </property>
+     <property name="flat">
+      <bool>true</bool>
      </property>
     </widget>
     <widget class="QPushButton" name="btnLienzo">
@@ -209,15 +261,40 @@
       <rect>
        <x>10</x>
        <y>90</y>
-       <width>111</width>
-       <height>28</height>
+       <width>30</width>
+       <height>30</height>
       </rect>
      </property>
+     <property name="font">
+      <font>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">border-style: solid;
+border-width: 1px;
+border-color: rgb(0, 51, 102);
+background-color: rgb(30, 33, 36, 180);
+color: rgb(255, 255, 255);
+border-radius: 14px;</string>
+     </property>
      <property name="text">
-      <string>Lienzo</string>
+      <string>L</string>
+     </property>
+     <property name="flat">
+      <bool>true</bool>
      </property>
     </widget>
    </widget>
+   <zorder>tblDocumentos</zorder>
+   <zorder>frmLogin</zorder>
+   <zorder>frmLogout</zorder>
+   <zorder>frmNuevo</zorder>
+   <zorder>btnActualizar</zorder>
+   <zorder>btnEliminar</zorder>
+   <zorder>btnVer</zorder>
+   <zorder>btnNuevo</zorder>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
@@ -225,7 +302,7 @@
      <x>0</x>
      <y>0</y>
      <width>700</width>
-     <height>25</height>
+     <height>26</height>
     </rect>
    </property>
   </widget>

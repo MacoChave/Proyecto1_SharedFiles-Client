@@ -37,6 +37,10 @@
         <height>351</height>
        </rect>
       </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: qlineargradient(spread:pad, x1:0.5, y1:1, x2:0.5, y2:0, stop:0.0700935 rgba(47, 41, 61, 130), stop:0.929907 rgba(0, 180, 156, 130));
+color: rgb(255, 255, 255);</string>
+      </property>
       <attribute name="label">
        <string>LogIn</string>
       </attribute>
@@ -84,7 +88,7 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="page_2">
+     <widget class="QWidget" name="pageLogUp">
       <property name="geometry">
        <rect>
         <x>0</x>
@@ -92,6 +96,10 @@
         <width>282</width>
         <height>351</height>
        </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: qlineargradient(spread:pad, x1:0.5, y1:1, x2:0.5, y2:0, stop:0.0700935 rgba(47, 41, 61, 130), stop:0.929907 rgba(0, 180, 156, 130));
+color: rgb(255, 255, 255);</string>
       </property>
       <attribute name="label">
        <string>LogUp</string>

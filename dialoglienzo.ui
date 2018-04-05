@@ -16,13 +16,13 @@
   <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
-     <x>20</x>
+     <x>10</x>
      <y>10</y>
-     <width>601</width>
-     <height>30</height>
+     <width>621</width>
+     <height>34</height>
     </rect>
    </property>
-   <layout class="QHBoxLayout" name="horizontalLayout">
+   <layout class="QHBoxLayout" name="layoutPintar">
     <item>
      <widget class="QLabel" name="lblComando">
       <property name="text">
@@ -46,42 +46,85 @@
     </item>
    </layout>
   </widget>
+  <widget class="QLabel" name="lblImagen">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>180</y>
+     <width>601</width>
+     <height>271</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
   <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
-     <x>21</x>
+     <x>10</x>
      <y>50</y>
-     <width>601</width>
-     <height>31</height>
+     <width>641</width>
+     <height>104</height>
     </rect>
    </property>
    <layout class="QHBoxLayout" name="horizontalLayout_2">
     <item>
-     <widget class="QLabel" name="lblX">
-      <property name="text">
-       <string>x</string>
+     <widget class="QGroupBox" name="grpX">
+      <property name="title">
+       <string>X</string>
       </property>
+      <layout class="QGridLayout" name="gridLayout">
+       <item row="0" column="0">
+        <widget class="QLabel" name="lblDe_x">
+         <property name="text">
+          <string>De:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QSpinBox" name="spnBxDe_x"/>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="lblA_x">
+         <property name="text">
+          <string>A:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QSpinBox" name="spnBxA_x"/>
+       </item>
+      </layout>
      </widget>
     </item>
     <item>
-     <widget class="QLineEdit" name="edtX">
-      <property name="placeholderText">
-       <string>(x_0,x_1)</string>
+     <widget class="QGroupBox" name="grpY">
+      <property name="title">
+       <string>Y</string>
       </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QLabel" name="lblY">
-      <property name="text">
-       <string>y</string>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QLineEdit" name="edtY">
-      <property name="placeholderText">
-       <string>(y_0,y_1)</string>
-      </property>
+      <layout class="QGridLayout" name="gridLayout_2">
+       <item row="0" column="0">
+        <widget class="QLabel" name="lblDe_y">
+         <property name="text">
+          <string>De:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QSpinBox" name="spnBxDe_y"/>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="lblA_y">
+         <property name="text">
+          <string>A:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QSpinBox" name="spnBxA_y"/>
+       </item>
+      </layout>
      </widget>
     </item>
     <item>
@@ -113,19 +156,6 @@
      </widget>
     </item>
    </layout>
-  </widget>
-  <widget class="QLabel" name="lblImagen">
-   <property name="geometry">
-    <rect>
-     <x>20</x>
-     <y>100</y>
-     <width>601</width>
-     <height>361</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string/>
-   </property>
   </widget>
  </widget>
  <resources/>
