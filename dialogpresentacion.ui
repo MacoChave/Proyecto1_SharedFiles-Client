@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>640</width>
+    <width>704</width>
     <height>480</height>
    </rect>
   </property>
@@ -22,6 +22,14 @@
      <height>28</height>
     </rect>
    </property>
+   <property name="styleSheet">
+    <string notr="true">border-style: solid;
+border-width: 1px;
+border-color: rgb(0, 51, 102);
+background-color: rgb(30, 33, 36, 180);
+color: rgb(255, 255, 255);
+border-radius: 14px;</string>
+   </property>
    <property name="text">
     <string>&lt;&lt;</string>
    </property>
@@ -29,11 +37,19 @@
   <widget class="QPushButton" name="btnNext">
    <property name="geometry">
     <rect>
-     <x>597</x>
-     <y>210</y>
+     <x>610</x>
+     <y>200</y>
      <width>31</width>
      <height>28</height>
     </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">border-style: solid;
+border-width: 1px;
+border-color: rgb(0, 51, 102);
+background-color: rgb(30, 33, 36, 180);
+color: rgb(255, 255, 255);
+border-radius: 14px;</string>
    </property>
    <property name="text">
     <string>&gt;&gt;</string>
@@ -79,13 +95,6 @@
      <widget class="QPushButton" name="btnEliminar">
       <property name="text">
        <string>ELiminar diapositiva</string>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QPushButton" name="btnGuardar">
-      <property name="text">
-       <string>Guardar diapositiva</string>
       </property>
      </widget>
     </item>
@@ -259,7 +268,7 @@
    </property>
    <layout class="QHBoxLayout" name="horizontalLayout_4">
     <item>
-     <widget class="QPushButton" name="btnGuardar_2">
+     <widget class="QPushButton" name="btnGuardar">
       <property name="text">
        <string>Guardar</string>
       </property>

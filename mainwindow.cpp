@@ -301,6 +301,7 @@ void MainWindow::on_btnPresentacion_clicked()
     
     DialogPresentacion p(this);
     p.setWindowTitle("Editor de presentaciones");
+    p.setInfo("", "Propietario");
     p.exec();
 
     connectClient();

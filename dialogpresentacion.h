@@ -3,11 +3,17 @@
 
 #include <QDialog>
 #include <QFile>
+#include <QInputDialog>
 #include <QTextStream>
 #include <QFileDialog>
+#include <QDebug>
+#include <QByteArray>
+#include <QPixmap>
+#include <QPrinter>
+#include <QPainter>
+
 #include <QTcpSocket>
 #include <QHostAddress>
-#include <QDebug>
 
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -40,7 +46,11 @@ private slots:
 
     void on_btnEliminar_clicked();
 
-    void on_btnGuardar_clicked();
+    void on_btnTitulo_clicked();
+
+    void on_btnCompleta_clicked();
+
+    void on_btnDoble_clicked();
 
     void on_btnImagen1_clicked();
 
@@ -50,7 +60,7 @@ private slots:
 
     void on_btnNext_clicked();
 
-    void on_btnGuardar_2_clicked();
+    void on_btnGuardar_clicked();
 
     void on_btnCancelar_clicked();
 
@@ -58,26 +68,32 @@ private slots:
 
     void on_btnPDF_clicked();
 
-    void on_btnTitulo_clicked();
+    void on_edtTitulo_returnPressed();
 
-    void on_btnCompleta_clicked();
-
-    void on_btnDoble_clicked();
+    void on_edtContenido_textChanged();
 
 private:
     Ui::DialogPresentacion *ui;
     QString usuario;
     QString filename;
     QString permiso;
-    QTcpSocket *tcpCliente;
     List<TADList *> *lista;
+    Node<TADList *> *currentNode;
+
+    QTcpSocket *tcpCliente;
 
     QJsonDocument jsd;
 
-    void conectar();
-    void interpreter(QString mensaje);
+    void connectClient();
+    void interpreter(QString message);
     void actionInfoFile(QStringList value);
-    void cargarLista();
+    void actionCoderImage(QStringList value);
+    bool loadList();
+    QString createJSON();
+    void setData();
+    void updateCurrentData();
+    void coderImage(QString value);
+    void decoderImage(QString value);
 };
 
 #endif // DIALOGPRESENTACION_H
