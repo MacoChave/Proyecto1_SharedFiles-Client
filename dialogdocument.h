@@ -30,7 +30,6 @@ public:
     explicit DialogDocument(QWidget *parent = 0);
     ~DialogDocument();
 
-    void setTcp(QTcpSocket *value);
     void setInfo(QString _filename, QString _permiso);
 
 private slots:
@@ -43,8 +42,6 @@ private slots:
     void on_btnCancelar_clicked();
 
     void on_btnNuevo_clicked();
-
-    void on_btnEditar_clicked();
 
     void on_btnPDF_clicked();
 
@@ -62,23 +59,38 @@ private slots:
 
     void on_btnChoose_clicked();
 
+    void on_edtTitulo_returnPressed();
+
+    void on_edtContenido_textChanged();
+
 private:
     Ui::DialogDocument *ui;
-    QString dateMod;
     QString filename;
+    QString permiso;
     GenericTree<NodeGenericTree *> *tree;
+    NodeGenericTree *currentItem;
     int count;
+
+    QTcpSocket *tcpCliente;
 
     QJsonDocument jsd;
 
-    QTcpSocket *tcpCliente;
     int opcion;
 
-    void conectar();
+    void connectClient();
     void interpreter(QString mensaje);
     void actionInfoFile(QStringList value);
-    void cargarArbol();
-    List<NodeGenericTree *> *obtenerHijos(QJsonArray currentJSA);
+    void actionCoderImage(QStringList value);
+    void loadTree();
+    List<NodeGenericTree *> *loadChildsTree(QJsonArray currentJSA);
+    QString createJSON();
+    QJsonArray getChildsTree(List<NodeGenericTree *> *currentList);
+    void setData();
+    void updateCurrentData();
+    QString coderImage(QString value);
+    void decoderImage(QString value);
+    int getX(int i);
+    int getY(int j);
 };
 
 #endif // DIALOGDOCUMENT_H

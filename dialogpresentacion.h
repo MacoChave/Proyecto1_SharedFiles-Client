@@ -92,10 +92,10 @@ private:
     QString createJSON();
     void setData();
     void updateCurrentData();
-    void coderImage(QString value);
+    QString coderImage(QString value);
     void decoderImage(QString value);
     int getX(int i);
-    int getY(int i);
+    int getY(int j);
 };
 
 #endif // DIALOGPRESENTACION_H
