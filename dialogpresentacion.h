@@ -94,6 +94,8 @@ private:
     void updateCurrentData();
     void coderImage(QString value);
     void decoderImage(QString value);
+    int getX(int i);
+    int getY(int i);
 };
 
 #endif // DIALOGPRESENTACION_H

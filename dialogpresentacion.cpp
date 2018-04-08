@@ -315,7 +315,28 @@ void DialogPresentacion::on_btnNuevo_clicked()
 
 void DialogPresentacion::on_btnEliminar_clicked()
 {
+    if (lista->size() < 2)
+        return;
 
+    Node<TADList *> *temporal = currentNode;
+    if (temporal->getPreview() != NULL)
+        temporal->getPreview()->setNext(temporal->getNext());
+    if (temporal->getNext() != NULL)
+        temporal->getNext()->setPreview(temporal->getPreview());
+
+    if (temporal->getNext() != NULL)
+        currentNode = temporal->getNext();
+    else
+        currentNode = temporal->getPreview();
+
+    if (currentNode->getNext() == NULL)
+        ui->btnNext->setEnabled(false);
+    if (currentNode->getPreview() == NULL)
+        ui->btnPreview->setEnabled(false);
+
+    delete temporal;
+    temporal = NULL;
+    setData();
 }
 
 /***********************************************************************************
@@ -465,7 +486,144 @@ void DialogPresentacion::on_btnGrafico_clicked()
 
 void DialogPresentacion::on_btnPDF_clicked()
 {
+    if (filename.isEmpty())
+        on_btnGuardar_clicked();
 
+    Node<TADList *> *temporal = lista->first();
+    QString filepath(filename);
+    filepath.append(".pdf");
+
+    int y = 20;
+
+    QPrinter printer;
+    printer.setOutputFormat(QPrinter::PdfFormat);
+    printer.setOutputFileName(filepath);
+    printer.setOrientation(QPrinter::Landscape);
+    printer.setPaperSize(QPrinter::Letter);
+
+    QPainter painter;
+
+    if (!painter.begin(&printer))
+    {
+        qWarning("Failed to open file, is it writable?");
+        return;
+    }
+
+    while (temporal != NULL)
+    {
+        int layout = temporal->getData()->getlayout();
+        int fromX = 0;
+        int toX = 0;
+        int fromY = 0;
+        int toY = 0;
+
+        switch (layout)
+        {
+            case TADList::TITULO:
+            {
+                /*
+                 * TITULO (3,2)(10,4)
+                */
+                painter.setFont(QFont("Liberation Sans", 44));
+                fromX = getX(1);
+                toX = getX(9);
+                fromY = getY(6);
+                toY = getY(8);
+                painter.drawText(QRect(fromX, fromY, toX - fromX, toY - fromY), Qt::AlignCenter, temporal->getData()->getTitulo());
+                qDebug() << temporal->getData()->getTitulo();
+
+                break;
+            }
+            case TADList::COMPLETO:
+            {
+                /*
+                 * TITULO (2,1)(11,2)
+                 * CONTENIDO (2,3)(11,5)
+                */
+                painter.setFont(QFont("Liberation Sans", 44));
+                fromX = getX(1);
+                toX = getX(9);
+                fromY = getY(2);
+                toY = getY(3);
+                painter.drawText(QRect(fromX, fromY, toX - fromX, toY - fromY), Qt::AlignCenter, temporal->getData()->getTitulo());
+                qDebug() << temporal->getData()->getTitulo();
+
+                painter.setFont(QFont("Liberation Sans", 32));
+                fromX = getX(1);
+                toX = getX(9);
+                fromY = getY(5);
+                toY = getY(14);
+                painter.drawText(QRect(fromX, fromY, toX - fromX, toY - fromY), Qt::TextWordWrap, temporal->getData()->getContenido());
+                qDebug() << temporal->getData()->getContenido();
+
+                break;
+            }
+            case TADList::DOBLE:
+            {
+                /*
+                 * TITULO (2,1)(11,2)
+                 * IMAGEN 1 (2,3)(5,5)
+                 * IMAGEN 2 (2,7)(11,5)
+                */
+                painter.setFont(QFont("Liberation Sans", 44));
+                fromX = getX(1);
+                toX = getX(9);
+                fromY = getY(2);
+                toY = getY(3);
+                painter.drawText(QRect(fromX, fromY, toX - fromX, toY - fromY), Qt::AlignCenter, temporal->getData()->getTitulo());
+                qDebug() << temporal->getData()->getTitulo();
+
+                fromX = getX(1);
+                toX = getX(4);
+                fromY = getY(5);
+                toY = getY(14);
+                painter.drawText(QRect(fromX, fromY, toX - fromX, toY - fromY), Qt::AlignCenter, temporal->getData()->getImagen1());
+
+                fromX = getX(6);
+                toX = getX(9);
+                fromY = getY(5);
+                toY = getY(14);
+                painter.drawText(QRect(fromX, fromY, toX - fromX, toY - fromY), Qt::AlignCenter, temporal->getData()->getImagen2());
+
+                break;
+            }
+        }
+
+        if (!printer.newPage())
+        {
+            qWarning("failed in flushing page to disk, disk full?");
+            break;
+        }
+
+        temporal = temporal->getNext();
+    }
+
+    painter.end();
+    qDebug() << "Creación de pdf completo";
+    QString cmd("xdg-open ");
+    cmd.append(filepath);
+
+    system(cmd.toLatin1().data());
+}
+
+/**
+ * @brief DialogPresentacion::getX
+ * @param Indice del 0 - 12
+ * @return Coordenada x
+ */
+int DialogPresentacion::getX(int i)
+{
+    return 100 * i;
+}
+
+/**
+ * @brief DialogPresentacion::getY
+ * @param Indice del 0 - 6
+ * @return Coordenada y
+ */
+int DialogPresentacion::getY(int i)
+{
+    return 50 * i;
 }
 
 /***********************************************************************************
