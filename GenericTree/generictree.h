@@ -14,6 +14,7 @@ public:
     ~GenericTree();
 
     void setRoot(NodeGenericTree *value);
+    NodeGenericTree *getRoot();
     QString graph();
 };
 
@@ -62,6 +63,12 @@ template <class T>
 void GenericTree<T>::setRoot(NodeGenericTree *value)
 {
     root = value;
+}
+
+template <class T>
+NodeGenericTree *GenericTree<T>::getRoot()
+{
+    return root;
 }
 
 template <class T>

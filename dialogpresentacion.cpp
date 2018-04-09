@@ -104,27 +104,10 @@ void DialogPresentacion::actionInfoFile(QStringList value)
 
 void DialogPresentacion::actionCoderImage(QStringList value)
 {
+    QByteArray ba = QByteArray::fromBase64(value[1].toLatin1());
     QPixmap pixmap;
-    if (pixmap.loadFromData(value[1].toLatin1(), "PNG"))
+    if (pixmap.loadFromData(ba))
         qDebug() << "QPixmap seteado";
-
-    QPrinter printer;
-    printer.setOutputFormat(QPrinter::PdfFormat);
-    printer.setOutputFileName("imagen.pdf");
-    QPainter painter;
-    if (! painter.begin(&printer)) { // failed to open file
-        qWarning("failed to open file, is it writable?");
-        return;
-    }
-
-    painter.drawPixmap(10, 10, 300, 300, pixmap);
-    painter.drawPixmap(100, 400, 300, 300, QPixmap("lienzo.png"));
-
-    painter.end();
-    qDebug() << "Creación de pdf completo";
-    QString cmd("xdg-open imagen.pdf");
-    qDebug() << cmd;
-    system(cmd.toLatin1().data());
 }
 
 /***********************************************************************************
@@ -216,6 +199,9 @@ QString DialogPresentacion::createJSON()
 
 void DialogPresentacion::setData()
 {
+    if (currentNode == NULL)
+        return;
+
     TADList *currentTadList = currentNode->getData();
 
     ui->edtTitulo->setText(currentTadList->getTitulo());
@@ -532,9 +518,6 @@ void DialogPresentacion::on_btnPDF_clicked()
         {
             case TADList::TITULO:
             {
-                /*
-                 * TITULO (3,2)(10,4)
-                */
                 painter.setFont(QFont("Liberation Sans", 44));
                 fromX = getX(1);
                 toX = getX(9);
@@ -547,10 +530,6 @@ void DialogPresentacion::on_btnPDF_clicked()
             }
             case TADList::COMPLETO:
             {
-                /*
-                 * TITULO (2,1)(11,2)
-                 * CONTENIDO (2,3)(11,5)
-                */
                 painter.setFont(QFont("Liberation Sans", 44));
                 fromX = getX(1);
                 toX = getX(9);
@@ -571,11 +550,6 @@ void DialogPresentacion::on_btnPDF_clicked()
             }
             case TADList::DOBLE:
             {
-                /*
-                 * TITULO (2,1)(11,2)
-                 * IMAGEN 1 (2,3)(5,5)
-                 * IMAGEN 2 (2,7)(11,5)
-                */
                 painter.setFont(QFont("Liberation Sans", 44));
                 fromX = getX(1);
                 toX = getX(9);
@@ -634,9 +608,9 @@ int DialogPresentacion::getX(int i)
  * @param Indice del 0 - 6
  * @return Coordenada y
  */
-int DialogPresentacion::getY(int i)
+int DialogPresentacion::getY(int j)
 {
-    return 50 * i;
+    return 50 * j;
 }
 
 /***********************************************************************************

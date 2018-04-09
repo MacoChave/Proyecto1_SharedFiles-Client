@@ -42,7 +42,5 @@ FORMS    += mainwindow.ui \
     dialogpresentacion.ui \
     dialoglienzo.ui
 
-RESOURCES +=
-
 DISTFILES += \
     .gitignore

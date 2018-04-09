@@ -6,12 +6,14 @@ DialogDocument::DialogDocument(QWidget *parent) :
     ui(new Ui::DialogDocument)
 {
     ui->setupUi(this);
-    tree = new GenericTree<NodeGenericTree *>();
     filename = "";
+    permiso = "";
     opcion = 0;
     count = 0;
+    tree = new GenericTree<NodeGenericTree *>();
+    currentItem = NULL;
 
-    conectar();
+    connectClient();
 }
 
 DialogDocument::~DialogDocument()
@@ -20,39 +22,34 @@ DialogDocument::~DialogDocument()
     delete tree;
 }
 
-void DialogDocument::setTcp(QTcpSocket *value)
-{
-    tcpCliente = value;
-}
-
 void DialogDocument::setInfo(QString _filename, QString _permiso)
 {
     filename = _filename;
-    if (_permiso.compare("Ver") == 0)
-    {
-        ui->btnGuardarNodo->setVisible(false);
-        ui->btnEliminar->setVisible(false);
-
-        ui->btnGuardar->setVisible(false);
-        ui->btnNuevo->setVisible(false);
-        ui->btnEditar->setVisible(false);
-    }
-    else if (_permiso.compare("Editar") == 0)
-    {
-    }
+    permiso = _permiso;
 
     if (!filename.isEmpty())
     {
         QString msj("INFOFILE^");
         msj.append(filename);
+
         producer(msj);
+    }
+    else
+    {
+        TADGenericTree *tadNodeTree = new TADGenericTree();
+        tadNodeTree->setTipo(TADGenericTree::PARRAFO);
+        NodeGenericTree *node = new NodeGenericTree(tadNodeTree);
+        tree->setRoot(node);
+
+        currentItem = tree->getRoot();
+        setData();
     }
 }
 
 /***********************************************************************************
  * MANEJO DE CONEXION CLIENTE
  **********************************************************************************/
-void DialogDocument::conectar()
+void DialogDocument::connectClient()
 {
     tcpCliente = new QTcpSocket(this);
     tcpCliente->connectToHost(QHostAddress::LocalHost, 1234);
@@ -87,21 +84,39 @@ void DialogDocument::interpreter(QString mensaje)
 
     if (mensaje.startsWith("INFOFILE"))
         actionInfoFile(splMensaje);
+    else if (mensaje.startsWith("CODER"))
+        actionCoderImage(splMensaje);
 }
 
+/***********************************************************************************
+ * MANEJO DE ACCIONES
+ **********************************************************************************/
 void DialogDocument::actionInfoFile(QStringList value)
 {
     if (value.size() > 1)
     {
         jsd = QJsonDocument::fromJson(value[1].toUtf8());
-        cargarArbol();
+        loadTree();
+
+        if (tree->getRoot() != NULL)
+        {
+            currentItem = tree->getRoot();
+            setData();
+        }
     }
 }
 
+void DialogDocument::actionCoderImage(QStringList value)
+{
+    QPixmap pixmap;
+    if (pixmap.loadFromData(value[1].toLatin1(), "PNG"))
+        qDebug() << "QPixmap seteado";
+}
+
 /***********************************************************************************
- * MANEJO DE ARBOL
+ * MANEJO DE ARCHIVO JSON
  **********************************************************************************/
-void DialogDocument::cargarArbol()
+void DialogDocument::loadTree()
 {
     if (jsd.isEmpty())
     {
@@ -117,18 +132,18 @@ void DialogDocument::cargarArbol()
     QString rootBody = rootJSO["contenido"].toString();
     QJsonArray rootJSA = rootJSO["subsecciones"].toArray();
     TADGenericTree *tadRoot = new TADGenericTree(count, rootTitle, rootBody);
-    tadRoot->setTipo(tadRoot->PARRAFO);
+    tadRoot->setTipo(TADGenericTree::PARRAFO);
     count++;
 
     rootNode = new NodeGenericTree(tadRoot);
     List<NodeGenericTree *> *rootChilds = NULL;
-    rootChilds = obtenerHijos(rootJSA);
+    rootChilds = loadChildsTree(rootJSA);
     rootNode->setChilds(rootChilds);
 
     tree->setRoot(rootNode);
 }
 
-List<NodeGenericTree *> *DialogDocument::obtenerHijos(QJsonArray currentJSA)
+List<NodeGenericTree *> *DialogDocument::loadChildsTree(QJsonArray currentJSA)
 {
     List<NodeGenericTree *> *list = new List<NodeGenericTree *>();
 
@@ -166,7 +181,7 @@ List<NodeGenericTree *> *DialogDocument::obtenerHijos(QJsonArray currentJSA)
             if (!jsa.isEmpty())
             {
                 List<NodeGenericTree *> *childs = NULL;
-                childs = obtenerHijos(jsa);
+                childs = loadChildsTree(jsa);
                 node->setChilds(childs);
             }
         }
@@ -183,54 +198,145 @@ List<NodeGenericTree *> *DialogDocument::obtenerHijos(QJsonArray currentJSA)
     return list;
 }
 
+QString DialogDocument::createJSON()
+{
+    QJsonObject rootJSO;
+
+    rootJSO.insert("titulo", currentItem->getData()->getTitulo());
+    rootJSO.insert("contenido", currentItem->getData()->getContenido());
+
+    QJsonArray jsa = getChildsTree(currentItem->getChilds());
+    rootJSO.insert("subsecciones", jsa);
+}
+
+QJsonArray DialogDocument::getChildsTree(List<NodeGenericTree *> *currentList)
+{
+    QJsonArray rootJSA;
+
+    Node<NodeGenericTree *> *node = currentList->first();
+    while (node != NULL)
+    {
+        NodeGenericTree *nodeTree = node->getData();
+
+        QJsonObject rootJSO;
+        rootJSO.insert("titulo", nodeTree->getData()->getTitulo());
+        rootJSO.insert("contenido", nodeTree->getData()->getContenido());
+
+        if (nodeTree->getChilds() != NULL)
+        {
+            if (nodeTree->getData()->getTipo() == TADGenericTree::VINETAS)
+            {
+            }
+            else
+            {
+                QJsonArray jsa = getChildsTree(nodeTree->getChilds());
+                rootJSO.insert("subsecciones", jsa);
+            }
+        }
+
+        rootJSA.push_back(rootJSO);
+
+        node = node->getNext();
+    }
+
+    return rootJSA;
+}
+
+void DialogDocument::setData()
+{
+    if (currentItem == NULL)
+        return;
+}
+
+void DialogDocument::updateCurrentData()
+{
+
+}
+
+QString DialogDocument::coderImage(QString value)
+{
+    QByteArray ba = value.toLatin1();
+
+    return QString (ba.toBase64());
+}
+
+void DialogDocument::decoderImage(QString value)
+{
+    producer("CODER^" + value);
+}
+
 /***********************************************************************************
- * MANEJO DE METODOS
+ * MANEJO DE DISEÑO DE DOCUMENTO
  **********************************************************************************/
-void DialogDocument::on_btnGuardar_clicked()
+void DialogDocument::on_btnParrafo_clicked()
 {
+    currentItem->getData()->setTipo(TADGenericTree::PARRAFO);
 
+    ui->lblTitulo->setVisible(true);
+    ui->lblTitulo->setText("Titulo (Opcional)");
+    ui->edtImagen->setVisible(true);
+
+    ui->lblContenido->setVisible(true);
+    ui->lblContenido->setText("Contenido (Opcional)");
+    ui->edtContenido->setVisible(true);
+
+    ui->lblImagen->setVisible(false);
+    ui->edtImagen->setVisible(false);
+    ui->btnChoose->setVisible(false);
 }
 
-void DialogDocument::on_btnCancelar_clicked()
+void DialogDocument::on_btnVineta_clicked()
 {
-    QString peticion("INFOFILE^");
-    peticion.append(filename);
-    producer(peticion);
-    qDebug() << "PEDIR DOCUMENTO " << peticion;
+    currentItem->getData()->setTipo(TADGenericTree::VINETAS);
+
+    ui->lblTitulo->setVisible(true);
+    ui->lblTitulo->setText("Titulo (Descripción de la lista de elementos)");
+    ui->edtImagen->setVisible(true);
+
+    ui->lblContenido->setVisible(true);
+    ui->lblContenido->setText("Ítems (Un elemento por cada línea)");
+    ui->edtContenido->setVisible(true);
+
+    ui->lblImagen->setVisible(false);
+    ui->edtImagen->setVisible(false);
+    ui->btnChoose->setVisible(false);
 }
 
+void DialogDocument::on_btnImagen_clicked()
+{
+    currentItem->getData()->setTipo(TADGenericTree::IMAGEN);
+
+    ui->lblTitulo->setVisible(true);
+    ui->lblTitulo->setText("Titulo (Pie de la imagen)");
+    ui->edtImagen->setVisible(true);
+
+    ui->lblContenido->setVisible(false);
+    ui->edtContenido->setVisible(false);
+
+    ui->lblImagen->setVisible(true);
+    ui->lblImagen->setText("Imagen");
+    ui->edtImagen->setVisible(true);
+    ui->btnChoose->setVisible(true);
+}
+
+/***********************************************************************************
+ * MANEJO DE ITEM
+ **********************************************************************************/
 void DialogDocument::on_btnNuevo_clicked()
 {
+    TADGenericTree *tad = new TADGenericTree();
+    tad->setTipo(TADGenericTree::PARRAFO);
+    NodeGenericTree *node = new NodeGenericTree(tad);
 
-}
+    currentItem->addChild(node);
 
-void DialogDocument::on_btnEditar_clicked()
-{
-
-}
-
-void DialogDocument::on_btnPDF_clicked()
-{
-
-}
-
-void DialogDocument::on_btnGrafico_clicked()
-{
-    QString text = tree->graph();
-
-    QFile file("arbolito.dot");
-    if (!file.open(QFile::WriteOnly))
-        return;
-
-    QTextStream out(&file);
-    out << text;
-    flush(out);
-    file.close();
+    on_btnParrafo_clicked();
+    currentItem = node;
+    setData();
 }
 
 void DialogDocument::on_btnEliminar_clicked()
 {
-
 }
 
 void DialogDocument::on_btnGuardarNodo_clicked()
@@ -267,55 +373,50 @@ void DialogDocument::on_btnGuardarNodo_clicked()
     }
 }
 
-void DialogDocument::on_btnParrafo_clicked()
+/***********************************************************************************
+ * MANEJO DE METODOS
+ **********************************************************************************/
+void DialogDocument::on_btnGuardar_clicked()
 {
-    opcion = 1;
 
-    ui->lblTitulo->setVisible(true);
-    ui->lblTitulo->setText("Titulo (Opcional)");
-    ui->edtImagen->setVisible(true);
-
-    ui->lblContenido->setVisible(true);
-    ui->lblContenido->setText("Contenido (Opcional)");
-    ui->edtContenido->setVisible(true);
-
-    ui->lblImagen->setVisible(false);
-    ui->edtImagen->setVisible(false);
-    ui->btnChoose->setVisible(false);
 }
 
-void DialogDocument::on_btnVineta_clicked()
+void DialogDocument::on_btnCancelar_clicked()
 {
-    opcion = 2;
-
-    ui->lblTitulo->setVisible(true);
-    ui->lblTitulo->setText("Titulo (Descripción de la lista de elementos)");
-    ui->edtImagen->setVisible(true);
-
-    ui->lblContenido->setVisible(true);
-    ui->lblContenido->setText("Ítems (Un elemento por cada línea)");
-    ui->edtContenido->setVisible(true);
-
-    ui->lblImagen->setVisible(false);
-    ui->edtImagen->setVisible(false);
-    ui->btnChoose->setVisible(false);
+    QString peticion("INFOFILE^");
+    peticion.append(filename);
+    producer(peticion);
+    qDebug() << "PEDIR DOCUMENTO " << peticion;
 }
 
-void DialogDocument::on_btnImagen_clicked()
+void DialogDocument::on_btnGrafico_clicked()
 {
-    opcion = 3;
 
-    ui->lblTitulo->setVisible(true);
-    ui->lblTitulo->setText("Titulo (Pie de la imagen)");
-    ui->edtImagen->setVisible(true);
+}
 
-    ui->lblContenido->setVisible(false);
-    ui->edtContenido->setVisible(false);
+void DialogDocument::on_btnPDF_clicked()
+{
 
-    ui->lblImagen->setVisible(true);
-    ui->lblImagen->setText("Imagen");
-    ui->edtImagen->setVisible(true);
-    ui->btnChoose->setVisible(true);
+}
+
+/**
+ * @brief DialogPresentacion::getX
+ * @param Indice del 0 - 12
+ * @return Coordenada x
+ */
+int DialogDocument::getX(int i)
+{
+    return 50 * i;
+}
+
+/**
+ * @brief DialogPresentacion::getY
+ * @param Indice del 0 - 6
+ * @return Coordenada y
+ */
+int DialogDocument::getY(int j)
+{
+    return 50 * j;
 }
 
 void DialogDocument::on_btnChoose_clicked()
@@ -327,4 +428,17 @@ void DialogDocument::on_btnChoose_clicked()
                 "Archivo de imagen (*.jpg) | Archivo de imagen (*.png)"
                 );
     ui->edtImagen->setText(filename);
+}
+
+/***********************************************************************************
+ * CAPTURAR TEXTO
+ **********************************************************************************/
+void DialogDocument::on_edtTitulo_returnPressed()
+{
+    currentItem->getData()->setTitulo(ui->edtTitulo->text());
+}
+
+void DialogDocument::on_edtContenido_textChanged()
+{
+    currentItem->getData()->setContenido(ui->edtContenido->toPlainText());
 }
