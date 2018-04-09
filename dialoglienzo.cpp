@@ -12,6 +12,8 @@ DialogLienzo::DialogLienzo(QWidget *parent) :
     commandIn(false);
     setDimension(true, -9999, 9999, -9999, 9999);
 
+    botones = new QList<QPushButton *>();
+
     connectClient();
 }
 
@@ -19,6 +21,7 @@ DialogLienzo::~DialogLienzo()
 {
     delete ui;
     delete arreglo;
+    delete botones;
 }
 
 /***********************************************************************************
@@ -132,6 +135,7 @@ void DialogLienzo::loadFile()
     m[1] = jso["lienzo_columna_sup"].toInt();
 
     arreglo = new Arreglo(n, m);
+    loadLienzo();
 
     QJsonArray jsa = jso["lienzo_bloques"].toArray();
 
@@ -170,7 +174,6 @@ void DialogLienzo::loadFile()
     ui->spnBxA_x->setValue(arreglo->getIMax());
     ui->spnBxDe_y->setValue(arreglo->getJMin());
     ui->spnBxA_y->setValue(arreglo->getJMin());
-    loadImage("lienzo.png");
 }
 
 QString DialogLienzo::createJSON()
@@ -217,6 +220,34 @@ QString DialogLienzo::createJSON()
     return strJSON;
 }
 
+void DialogLienzo::loadLienzo()
+{
+    int dim_i = arreglo->getIMax() - arreglo->getIMin() + 1;
+    int dim_j = arreglo->getJMax() - arreglo->getJMin() + 1;
+    int dim_button = 25;
+    QPushButton *button;
+
+    for (int i = 0; i < dim_i; i++)
+    {
+        for (int j = 0; j < dim_j; j++)
+        {
+            button = new QPushButton(ui->frmLienzo);
+            button->setObjectName("button" + i + j);
+            button->setText(i + "," + j);
+            button->setFlat(true);
+            button->setGeometry(30 + i*22, 30 + j*22, dim_button, dim_button);
+            button->show();
+
+            botones->append(button);
+        }
+    }
+}
+
+void DialogLienzo::paintLienzo(int i, int j)
+{
+
+}
+
 /***********************************************************************************
  * PINTAR EN MATRIZ
  **********************************************************************************/
@@ -229,6 +260,9 @@ void DialogLienzo::paint(QString color, int i, int j)
     pos[1] = j;
 
     arreglo->setDato(color, pos);
+    int loc = arreglo->getLoc(pos);
+    qDebug() << "LOC: " << loc << " QLIST: " << botones->size();
+    botones->at(loc)->setStyleSheet("background-color : " + arreglo->getDato(pos));
 }
 
 void DialogLienzo::paint(QString color, int from_i, int from_j, int to_i, int to_j)
@@ -243,15 +277,18 @@ void DialogLienzo::paint(QString color, int from_i, int from_j, int to_i, int to
             pos[1] = j;
 
             arreglo->setDato(color, pos);
+            int loc = arreglo->getLoc(pos);
+            qDebug() << "LOC: " << loc << " QLIST: " << botones->size();
+            botones->at(loc)->setStyleSheet("background-color : " + arreglo->getDato(pos));
         }
     }
 }
 
 void DialogLienzo::loadImage(QString filepath)
 {
-    QImage image;
-    image.load(filepath);
-    ui->lblImagen->setPixmap(QPixmap::fromImage(image).scaled(ui->lblImagen->width(), ui->lblImagen->height(), Qt::KeepAspectRatio));
+//    QImage image;
+//    image.load(filepath);
+//    ui->lblImagen->setPixmap(QPixmap::fromImage(image).scaled(ui->lblImagen->width(), ui->lblImagen->height(), Qt::KeepAspectRatio));
 }
 
 /***********************************************************************************

@@ -19,6 +19,7 @@ public:
     int getJMin();
     int getJMax();
     int getLoc(int *indice);
+    int getSize();
     QString graph();
 };
 

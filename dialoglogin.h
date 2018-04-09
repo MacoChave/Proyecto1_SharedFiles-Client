@@ -8,6 +8,8 @@
 #include <QString>
 #include <QMessageBox>
 #include <QDebug>
+#include <QList>
+#include <QPushButton>
 
 namespace Ui {
 class DialogLogin;
@@ -35,6 +37,8 @@ private slots:
 private:
     Ui::DialogLogin *ui;
     QTcpSocket *tcpCliente;
+
+    QList<QPushButton *> botones;
 
     void actionLogIn(QStringList value);
     void actionLogUp(QStringList value);

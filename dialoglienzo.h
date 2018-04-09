@@ -12,6 +12,9 @@
 #include <QInputDialog>
 #include <QDir>
 
+#include <QList>
+#include <QPushButton>
+
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonArray>
@@ -54,6 +57,8 @@ private:
     QString permiso;
     Arreglo *arreglo;
 
+    QList<QPushButton *> *botones;
+
     QJsonDocument jsd;
 
     QTcpSocket *tcpCliente;
@@ -69,6 +74,8 @@ private:
     void commandIn(bool mostrar);
     void setDimension(bool mostrar, int minX, int maxX, int minY, int maxY);
     QString createJSON();
+    void loadLienzo();
+    void paintLienzo(int i, int j);
 };
 
 #endif // DIALOGLIENZO_H

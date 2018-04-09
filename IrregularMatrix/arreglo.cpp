@@ -80,6 +80,11 @@ int Arreglo::getLoc(int *indice)
     return loc;
 }
 
+int Arreglo::getSize()
+{
+    return alfa->size();
+}
+
 QString Arreglo::graph()
 {
     QString texto;
