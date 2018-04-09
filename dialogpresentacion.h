@@ -93,7 +93,7 @@ private:
     void setData();
     void updateCurrentData();
     void coderImage(QString value);
-    void decoderImage(QString value);
+    QPixmap decoderImage(QString value);
     int getX(int i);
     int getY(int i);
 };

@@ -239,7 +239,17 @@ void DialogPresentacion::updateCurrentData()
     currentNode->getData()->setImagen2(ui->edtImagen2->text());
 }
 
-void DialogPresentacion::decoderImage(QString value)
+QPixmap DialogPresentacion::decoderImage(QString value)
+{
+    QByteArray ba;
+    ba = QByteArray::fromBase64(value.toLatin1());
+    QPixmap pixmap;
+    pixmap.loadFromData(ba);
+
+    return pixmap;
+}
+
+void DialogPresentacion::coderImage(QString value)
 {
     producer("CODER^" + value);
 }
@@ -512,6 +522,7 @@ void DialogPresentacion::on_btnPDF_clicked()
     while (temporal != NULL)
     {
         int layout = temporal->getData()->getlayout();
+        QPixmap pixmap;
         int fromX = 0;
         int toX = 0;
         int fromY = 0;
@@ -577,13 +588,15 @@ void DialogPresentacion::on_btnPDF_clicked()
                 toX = getX(4);
                 fromY = getY(5);
                 toY = getY(14);
-                painter.drawText(QRect(fromX, fromY, toX - fromX, toY - fromY), Qt::AlignCenter, temporal->getData()->getImagen1());
+                pixmap = decoderImage(temporal->getData()->getImagen1());
+                painter.drawPixmap(QRect(fromX, fromY, toX - fromX, toY - fromY), pixmap);
 
                 fromX = getX(6);
                 toX = getX(9);
                 fromY = getY(5);
                 toY = getY(14);
-                painter.drawText(QRect(fromX, fromY, toX - fromX, toY - fromY), Qt::AlignCenter, temporal->getData()->getImagen2());
+                pixmap = decoderImage(temporal->getData()->getImagen2());
+                painter.drawPixmap(QRect(fromX, fromY, toX - fromX, toY - fromY), pixmap);
 
                 break;
             }

@@ -5,9 +5,9 @@
 
 class Arreglo
 {
-    int *n; // LIMITES INFERIORES
-    int *m; // LIMITES SUPERIORES
-    QString *alfa; // DIRECCION DEL PRIMER ELEMENTO (ARREGLO LINEALIZADO)
+    int *n; // LIMITES INFERIORES [i_min, j_min]
+    int *m; // LIMITES SUPERIORES [i_max, j_max]
+    QString *alfa; // DIRECCION DEL PRIMER ELEMENTO (ARREGLO LINEALIZADO) [jk, ghj, hjk]
 public:
     Arreglo(int n[], int m[]);
     ~Arreglo();
