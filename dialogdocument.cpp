@@ -39,9 +39,9 @@ void DialogDocument::setInfo(QString _filename, QString _permiso)
         TADGenericTree *tadNodeTree = new TADGenericTree();
         tadNodeTree->setTipo(TADGenericTree::PARRAFO);
         NodeGenericTree *node = new NodeGenericTree(tadNodeTree);
-        currentItem = node;
-
         tree->setRoot(node);
+
+        currentItem = tree->getRoot();
         setData();
     }
 }
@@ -96,7 +96,9 @@ void DialogDocument::actionInfoFile(QStringList value)
     if (value.size() > 1)
     {
         jsd = QJsonDocument::fromJson(value[1].toUtf8());
-        if (loadTree())
+        loadTree();
+
+        if (tree->getRoot() != NULL)
         {
             currentItem = tree->getRoot();
             setData();
@@ -216,7 +218,7 @@ QJsonArray DialogDocument::getChildsTree(List<NodeGenericTree *> *currentList)
     {
         NodeGenericTree *nodeTree = node->getData();
 
-        QJsonObject jso;
+        QJsonObject rootJSO;
         rootJSO.insert("titulo", nodeTree->getData()->getTitulo());
         rootJSO.insert("contenido", nodeTree->getData()->getContenido());
 
@@ -242,7 +244,8 @@ QJsonArray DialogDocument::getChildsTree(List<NodeGenericTree *> *currentList)
 
 void DialogDocument::setData()
 {
-
+    if (currentItem == NULL)
+        return;
 }
 
 void DialogDocument::updateCurrentData()

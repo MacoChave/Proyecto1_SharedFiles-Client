@@ -199,6 +199,9 @@ QString DialogPresentacion::createJSON()
 
 void DialogPresentacion::setData()
 {
+    if (currentNode == NULL)
+        return;
+
     TADList *currentTadList = currentNode->getData();
 
     ui->edtTitulo->setText(currentTadList->getTitulo());
