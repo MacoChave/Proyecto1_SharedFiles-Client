@@ -92,8 +92,8 @@ private:
     QString createJSON();
     void setData();
     void updateCurrentData();
-    QString coderImage(QString value);
-    void decoderImage(QString value);
+    QPixmap decoderImage(QString value);
+    void coderImage(QString value);
     int getX(int i);
     int getY(int j);
 };

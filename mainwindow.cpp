@@ -247,14 +247,14 @@ void MainWindow::on_btnVer_clicked()
     QString permiso = ui->tblDocumentos->item(y, 2)->text();
 
     tcpCliente = NULL;
-    if (tipo.compare("Documento") == 0)
+    if (tipo.compare("documento") == 0)
     {
         DialogDocument d(this);
         d.setWindowTitle("Editor de documentos");
         d.setInfo(filename, permiso);
         d.exec();
     }
-    else if (tipo.compare("Lienzo") == 0)
+    else if (tipo.compare("lienzo") == 0)
     {
         DialogLienzo l(this);
         l.setWindowTitle("Editor de imagenes");
