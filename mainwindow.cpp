@@ -9,6 +9,7 @@ MainWindow::MainWindow(QWidget *parent) :
     usuario = "";
     clearInformation();
     ui->frmNuevo->setVisible(false);
+    on_btnOcultar_clicked();
 
     connectClient();
 }
@@ -65,6 +66,10 @@ void MainWindow::interpreter(QString mensaje)
         actionUpdateFile(splMensaje);
     else if (mensaje.startsWith("DELETEFILE"))
         actionDeleteFile(splMensaje);
+    else if (mensaje.startsWith("LISTUSER"))
+        actionListUser(splMensaje);
+    else if (mensaje.startsWith("SHAREDUSER"))
+        actionSharedUser(splMensaje);
 }
 
 void MainWindow::actionSesion(QStringList value)
@@ -171,6 +176,20 @@ void MainWindow::actionDeleteFile(QStringList value)
     }
 }
 
+void MainWindow::actionListUser(QStringList value)
+{
+    qDebug() << value;
+    value.pop_front();
+    ui->cmbUsuarios->addItems(value);
+}
+
+void MainWindow::actionSharedUser(QStringList value)
+{
+    qDebug() << value;
+    value.pop_front();
+    ui->cmbCompartidos->addItems(value);
+}
+
 /***********************************************************************************
  * MANEJO DE UI
  **********************************************************************************/
@@ -179,6 +198,18 @@ void MainWindow::loadInformation()
     ui->frmLogin->setVisible(false);
     ui->frmLogout->setVisible(true);
     producer("LISTFILES");
+}
+
+void MainWindow::loadComboBox()
+{
+    int y = ui->tblDocumentos->currentRow();
+    QString filename = ui->tblDocumentos->item(y, 0)->text();
+
+    QString message;
+    message = "LISTUSER^";
+    message.append(filename);
+
+    producer(message);
 }
 
 void MainWindow::clearInformation()
@@ -193,6 +224,12 @@ void MainWindow::cleanTable()
 {
     ui->tblDocumentos->clear();
     ui->tblDocumentos->setRowCount(0);
+}
+
+void MainWindow::cleanComboBox()
+{
+    ui->cmbUsuarios->clear();
+
 }
 
 void MainWindow::on_btnActualizar_clicked()
@@ -278,6 +315,72 @@ void MainWindow::on_btnNuevo_clicked()
         return;
 
     ui->frmNuevo->setVisible(true);
+}
+
+void MainWindow::on_btnCompartir_clicked()
+{
+    QString user, permission, filename;
+    user = ui->cmbUsuarios->currentText();
+    permission = ui->cmbPermisos->currentText();
+    int y = ui->tblDocumentos->currentRow();
+    filename = ui->tblDocumentos->item(y, 0)->text();
+
+    qDebug() << "Add permission" << user << ", " << permission;
+
+    QString message("ADDPERMISSION^");
+    message.append(user);
+    message.append("^");
+    message.append(filename);
+    message.append("^");
+    message.append(permission);
+
+    producer(message);
+}
+
+void MainWindow::on_btnRestringir_clicked()
+{
+    QString user, filename;
+    user = ui->cmbCompartidos->currentText();
+    int y = ui->tblDocumentos->currentRow();
+    filename = ui->tblDocumentos->item(y, 0)->text();
+
+    QString message("DELETEPERMISSION^");
+    message.append(user);
+    message.append("^");
+    message.append(filename);
+
+    producer(message);
+}
+
+void MainWindow::on_btnOpcion_clicked()
+{
+    ui->frmOpcion->setVisible(true);
+    ui->btnOpcion->setVisible(false);
+    ui->btnOcultar->setVisible(true);
+
+    cleanComboBox();
+    loadComboBox();
+}
+
+void MainWindow::on_btnOcultar_clicked()
+{
+    ui->frmOpcion->setVisible(false);
+    ui->btnOpcion->setVisible(true);
+    ui->btnOcultar->setVisible(false);
+
+    cleanComboBox();
+}
+
+void MainWindow::on_btnReloadCompartidos_clicked()
+{
+    ui->cmbCompartidos->clear();
+    int y = ui->tblDocumentos->currentRow();
+    QString filename = ui->tblDocumentos->item(y, 0)->text();
+
+    QString message("SHAREDUSER^");
+    message.append(filename);
+
+    producer(message);
 }
 
 /***********************************************************************************

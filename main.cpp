@@ -11,17 +11,33 @@ int main(int argc, char *argv[])
                   "border-width: 1px;"
                   "border-color: rgb(255, 255, 255, 255);"
                   "background-color: rgb(255, 255, 255, 180);"
-                  "color: rgb(255, 255, 255);"
+                  "color: #1D1D1D;"
                   "border-radius: 6px;"
                   "}";
 
     QString frameStyle;
-    frameStyle = "QPushButton {"
+    frameStyle = "QFrame {"
                  "border-style: solid;"
                  "border-width: 1px;"
                  "border-color: rgb(255, 255, 255, 180);"
                  "background-color: rgb(255, 255, 255, 100);"
+                 "}"
+                 "QLabel {"
+                 "border-style: solid;"
+                 "border-width: 1px;"
+                 "border-color: rgb(255, 255, 255, 100);"
+                 "background-color: rgb(255, 255, 255, 50);"
                  "}";
+
+    QString editTextStyle;
+    editTextStyle = "QLineEdit {"
+                    "background-color: rgb(245, 245, 245);"
+                    "color: rgb(29, 29, 29);"
+                    "}"
+                    "QTextEdit {"
+                    "background-color: rgb(245, 245, 245);"
+                    "color: rgb(29, 29, 29);"
+                    "}";
 
     QString windowStyle;
     windowStyle = "QMainWindow {"

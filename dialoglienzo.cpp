@@ -233,7 +233,6 @@ void DialogLienzo::loadLienzo()
         {
             button = new QPushButton(ui->frmLienzo);
             button->setObjectName("button" + i + j);
-            button->setText(i + "," + j);
             button->setFlat(true);
             button->setGeometry(30 + i*22, 30 + j*22, dim_button, dim_button);
             button->show();

@@ -38,11 +38,21 @@ private slots:
 
     void on_btnNuevo_clicked();
 
+    void on_btnCompartir_clicked();
+
+    void on_btnRestringir_clicked();
+
+    void on_btnOpcion_clicked();
+
+    void on_btnOcultar_clicked();
+
     void on_btnDocumento_clicked();
 
     void on_btnPresentacion_clicked();
 
     void on_btnLienzo_clicked();
+
+    void on_btnReloadCompartidos_clicked();
 
 public slots:
     void consumer();
@@ -64,10 +74,14 @@ private:
     void actionCreateFile(QStringList value);
     void actionUpdateFile(QStringList value);
     void actionDeleteFile(QStringList value);
+    void actionListUser(QStringList value);
+    void actionSharedUser(QStringList value);
 
     void loadInformation();
+    void loadComboBox();
     void clearInformation();
     void cleanTable();
+    void cleanComboBox();
 };
 
 #endif // MAINWINDOW_H
