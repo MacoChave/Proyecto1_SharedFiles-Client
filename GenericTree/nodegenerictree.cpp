@@ -3,7 +3,7 @@
 NodeGenericTree::NodeGenericTree()
 {
     data = NULL;
-    childs = NULL;
+    childs = new List<NodeGenericTree *>();
 }
 
 NodeGenericTree::~NodeGenericTree()
@@ -28,12 +28,14 @@ TADGenericTree *NodeGenericTree::getData()
 
 void NodeGenericTree::addChild(NodeGenericTree *child)
 {
-    childs->insert(child);
+    if (child != NULL)
+        childs->insert(child);
 }
 
 void NodeGenericTree::setChilds(List<NodeGenericTree *> *value)
 {
-    childs = value;
+    if (value != NULL)
+        childs = value;
 }
 
 List<NodeGenericTree *> *NodeGenericTree::getChilds()

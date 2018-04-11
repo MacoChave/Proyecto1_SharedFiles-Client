@@ -261,9 +261,23 @@
      <height>321</height>
     </rect>
    </property>
+   <property name="indentation">
+    <number>4</number>
+   </property>
+   <attribute name="headerDefaultSectionSize">
+    <number>40</number>
+   </attribute>
+   <attribute name="headerMinimumSectionSize">
+    <number>5</number>
+   </attribute>
    <column>
     <property name="text">
-     <string notr="true">1</string>
+     <string notr="true">ID</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>Descripción</string>
     </property>
    </column>
   </widget>

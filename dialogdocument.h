@@ -11,6 +11,7 @@
 #include <QPixmap>
 #include <QPrinter>
 #include <QPainter>
+#include <QTreeWidgetItem>
 
 #include <QTcpSocket>
 #include <QHostAddress>
@@ -97,6 +98,9 @@ private:
     void childPDF(QPrinter &printer, QPainter &painter, NodeGenericTree *current, int &y, int level);
     int getX(int i);
     int getY(int j);
+    void setDataTreeWidget();
+    QTreeWidgetItem *setDataChildTreeWidget(NodeGenericTree *current);
+    void clearTreeWidget();
 };
 
 #endif // DIALOGDOCUMENT_H

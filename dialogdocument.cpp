@@ -249,6 +249,9 @@ void DialogDocument::setData()
 {
     if (currentItem == NULL)
         return;
+
+    clearTreeWidget();
+    setDataTreeWidget();
 }
 
 void DialogDocument::updateCurrentData()
@@ -644,6 +647,47 @@ int DialogDocument::getX(int i)
 int DialogDocument::getY(int j)
 {
     return (50 * j) + 5;
+}
+
+void DialogDocument::clearTreeWidget()
+{
+    ui->treeWidget->clear();
+}
+
+void DialogDocument::setDataTreeWidget()
+{
+    QTreeWidgetItem *rootItem = new QTreeWidgetItem();
+    rootItem = setDataChildTreeWidget(currentItem);
+
+    ui->treeWidget->addTopLevelItem(rootItem);
+}
+
+QTreeWidgetItem *DialogDocument::setDataChildTreeWidget(NodeGenericTree *current)
+{
+    QTreeWidgetItem *rootItem = new QTreeWidgetItem();
+    QString id = QString::number(current->getData()->getId());
+    QString contenido = current->getData()->getTitulo();
+
+    if (contenido.isEmpty())
+        contenido = current->getData()->getContenido();
+
+    rootItem->setText(0, id);
+    rootItem->setText(1, contenido);
+
+    if (current->getChilds() == NULL || current->getChilds()->size() == 0)
+        return rootItem;
+
+    Node<NodeGenericTree *> *node = current->getChilds()->first();
+
+    while (node != NULL)
+    {
+        QTreeWidgetItem *childItem = setDataChildTreeWidget(node->getData());
+        rootItem->addChild(childItem);
+
+        node = node->getNext();
+    }
+
+    return rootItem;
 }
 
 void DialogDocument::on_btnChoose_clicked()
