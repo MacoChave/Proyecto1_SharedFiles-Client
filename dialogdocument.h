@@ -94,7 +94,7 @@ private:
     void updateCurrentData();
     QString coderImage(QString value);
     QPixmap decoderImage(QString value);
-    void childPDF(QPainter &painter, NodeGenericTree *current, int &y, int level);
+    void childPDF(QPrinter &printer, QPainter &painter, NodeGenericTree *current, int &y, int level);
     int getX(int i);
     int getY(int j);
 };

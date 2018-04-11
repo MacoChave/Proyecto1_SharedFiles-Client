@@ -439,10 +439,10 @@ void DialogDocument::on_btnPDF_clicked()
         return;
     }
 
-    int y = 1;
-    int fromX = getX(0);
+    int y = 2;
+    int fromX = getX(1);
     int fromY = getY(y);
-    int toX = getX(15);
+    int toX = getX(14);
     int toY = getY(y);
 
     QString titulo = currentItem->getData()->getTitulo();
@@ -467,7 +467,15 @@ void DialogDocument::on_btnPDF_clicked()
 
     while (item != NULL)
     {
-        childPDF(painter, item->getData(), y, 1);
+        childPDF(printer, painter, item->getData(), y, 1);
+
+        if (y > 15)
+        {
+            if (!printer.newPage())
+                return;
+
+            y = 2;
+        }
 
         item = item->getNext();
     }
@@ -480,11 +488,11 @@ void DialogDocument::on_btnPDF_clicked()
     system(cmd.toLatin1().data());
 }
 
-void DialogDocument::childPDF(QPainter &painter, NodeGenericTree *current, int &y, int level)
+void DialogDocument::childPDF(QPrinter &printer, QPainter &painter, NodeGenericTree *current, int &y, int level)
 {
     TADGenericTree *tad = current->getData();
-    int fromX = getX(0);
-    int toX = getX(15);
+    int fromX = getX(1);
+    int toX = getX(14);
     int fromY = getY(y);
     int toY;
 
@@ -510,6 +518,16 @@ void DialogDocument::childPDF(QPainter &painter, NodeGenericTree *current, int &
             fromY = getY(y);
             toY = getY(y + divisiones);
 
+            if (y > 15)
+            {
+                if (!printer.newPage())
+                    return;
+
+                y = 2;
+                fromY = getY(y);
+                toY = getY(y + divisiones);
+            }
+
             painter.setFont(QFont("Arial", 12));
             painter.drawText(QRect(fromX, fromY, toX - fromX, toY - fromY), Qt::TextWordWrap, contenido);
             y += divisiones;
@@ -521,17 +539,30 @@ void DialogDocument::childPDF(QPainter &painter, NodeGenericTree *current, int &
             titulo = tad->getTitulo();
             contenido = tad->getContenido();
 
+            painter.drawText(QRect(fromX, fromY, toX - fromX, getY(1)), Qt::TextWordWrap, titulo);
+            y++;
+
             Node<NodeGenericTree *> *child = current->getChilds()->first();
 
             while (child != NULL)
             {
                 contenido = child->getData()->getData()->getContenido();
-                int divisiones = contenido.size() / 50;
+                contenido.push_front(" * ");
                 fromY = getY(y);
-                toY = getY(y + divisiones);
+                toY = getY(y + 1);
+
+                if (y > 15)
+                {
+                    if (!printer.newPage())
+                        return;
+
+                    y = 2;
+                    fromY = getY(y);
+                    toY = getY(y + 1);
+                }
 
                 painter.drawText(QRect(fromX, fromY, toX - fromX, toY - fromY), Qt::TextWordWrap, contenido);
-                y += divisiones;
+                y++;
 
                 child = child->getNext();
             }
@@ -545,16 +576,29 @@ void DialogDocument::childPDF(QPainter &painter, NodeGenericTree *current, int &
             titulo = tad->getTitulo();
             contenido = tad->getContenido();
 
-            fromX = getX(3);
-            toX = getX(12);
+            fromX = getX(4);
+            toX = getX(11);
             fromY = getY(y);
             toY = getY(y + 8);
+
+            if (y > 15)
+            {
+                if (!printer.newPage())
+                    return;
+
+                y = 2;
+                fromY = getY(y);
+                toY = getY(y);
+            }
+
             pixmap = decoderImage(contenido);
             painter.drawPixmap(QRect(fromX, fromY, toX - fromX, toY - fromY), pixmap);
             y += 9;
 
+            toY = getY(y);
+
             painter.setFont(QFont("Arial", 12));
-            painter.drawText(QRect(fromX, fromY, toX - fromX, fromY), Qt::AlignHCenter, titulo);
+            painter.drawText(QRect(fromX, toY, toX - fromX, toY), Qt::AlignHCenter, titulo);
             y++;
 
             break;
@@ -568,7 +612,15 @@ void DialogDocument::childPDF(QPainter &painter, NodeGenericTree *current, int &
 
     while (item != NULL)
     {
-        childPDF(painter, item->getData(), y, 1);
+        childPDF(printer, painter, item->getData(), y, 1);
+
+        if (y > 15)
+        {
+            if (!printer.newPage())
+                return;
+
+            y = 1;
+        }
 
         item = item->getNext();
     }
