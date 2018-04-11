@@ -1,6 +1,7 @@
 #ifndef GENERICTREE_H
 #define GENERICTREE_H
-#include"nodegenerictree.h"
+#include <QDebug>
+#include "nodegenerictree.h"
 
 template <typename T>
 class GenericTree
@@ -75,16 +76,13 @@ template <class T>
 QString GenericTree<T>::graph()
 {
     QString text;
-    text.append("digraph arbolito");
-    text.append(" {\n");
-    text.append("node [shape = \"box\"]\n");
-
     if (root != NULL)
-        text.append(root->createNode());
-
-    text.append(graph(root));
-
-    text.append("}");
+    {
+        text = root->createNode();
+        text.append(graph(root));
+    }
+    else
+        qDebug() << "Arbol es vacío";
 
     return text;
 }

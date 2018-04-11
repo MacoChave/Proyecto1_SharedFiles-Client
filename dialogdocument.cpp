@@ -103,6 +103,8 @@ void DialogDocument::actionInfoFile(QStringList value)
             currentItem = tree->getRoot();
             setData();
         }
+        else
+        qDebug() << "Arbol vacío";
     }
 }
 
@@ -141,6 +143,7 @@ void DialogDocument::loadTree()
     rootNode->setChilds(rootChilds);
 
     tree->setRoot(rootNode);
+    qDebug() << "Arbol cargado";
 }
 
 List<NodeGenericTree *> *DialogDocument::loadChildsTree(QJsonArray currentJSA)
@@ -255,14 +258,17 @@ void DialogDocument::updateCurrentData()
 
 QString DialogDocument::coderImage(QString value)
 {
-    QByteArray ba = value.toLatin1();
-
-    return QString (ba.toBase64());
+    producer("CODER^" + value);
 }
 
-void DialogDocument::decoderImage(QString value)
+QPixmap DialogDocument::decoderImage(QString value)
 {
-    producer("CODER^" + value);
+    QByteArray ba;
+    ba = QByteArray::fromBase64(value.toLatin1());
+    QPixmap pixmap;
+    pixmap.loadFromData(ba);
+
+    return pixmap;
 }
 
 /***********************************************************************************
@@ -391,12 +397,181 @@ void DialogDocument::on_btnCancelar_clicked()
 
 void DialogDocument::on_btnGrafico_clicked()
 {
+    QString text;
+    text.append("digraph arbolito");
+    text.append(" {\n");
+    text.append("node [shape = \"box\"]\n");
 
+    text.append(tree->graph());
+
+    text.append("}");
+
+    QFile file("arbolito.dot");
+    if (file.open(QFile::WriteOnly | QFile::Text))
+    {
+        QTextStream out(&file);
+        out << text;
+
+        flush(out);
+        file.close();
+    }
 }
 
 void DialogDocument::on_btnPDF_clicked()
 {
+    if (filename.isEmpty())
+        on_btnGuardar_clicked();
 
+    QString filepath(filename);
+    filepath.append(".pdf");
+
+    QPrinter printer;
+    printer.setOutputFormat(QPrinter::PdfFormat);
+    printer.setOutputFileName(filepath);
+    printer.setOrientation(QPrinter::Portrait);
+    printer.setPaperSize(QPrinter::Letter);
+
+    QPainter painter;
+
+    if (!painter.begin(&printer))
+    {
+        qWarning("Failed to open file, is it writable?");
+        return;
+    }
+
+    int y = 1;
+    int fromX = getX(0);
+    int fromY = getY(y);
+    int toX = getX(15);
+    int toY = getY(y);
+
+    QString titulo = currentItem->getData()->getTitulo();
+    QString contenido = currentItem->getData()->getContenido();
+    qDebug() << "Titulo -> " << titulo;
+    qDebug() << "Contenido.size -> " << contenido.size();
+    qDebug() << "Contenido -> " << contenido;
+
+    painter.setFont(QFont("Arial", 18, 2));
+    painter.drawText(QRect(fromX, fromY, toX - fromX, getY(1)), Qt::AlignHCenter, titulo);
+    y++;
+
+    int divisiones = contenido.size() / 50;
+    fromY = getY(y);
+    toY = getY(y + divisiones);
+
+    painter.setFont(QFont("Arial", 12));
+    painter.drawText(QRect(fromX, fromY, toX - fromX, toY - fromY), Qt::TextWordWrap, contenido);
+    y += divisiones;
+
+    Node<NodeGenericTree *> *item = currentItem->getChilds()->first();
+
+    while (item != NULL)
+    {
+        childPDF(painter, item->getData(), y, 1);
+
+        item = item->getNext();
+    }
+
+    painter.end();
+    qDebug() << "Creación de pdf completo";
+    QString cmd("xdg-open ");
+    cmd.append(filepath);
+
+    system(cmd.toLatin1().data());
+}
+
+void DialogDocument::childPDF(QPainter &painter, NodeGenericTree *current, int &y, int level)
+{
+    TADGenericTree *tad = current->getData();
+    int fromX = getX(0);
+    int toX = getX(15);
+    int fromY = getY(y);
+    int toY;
+
+    QString titulo;
+    QString contenido;
+
+    switch (tad->getTipo())
+    {
+        case TADGenericTree::PARRAFO:
+        {
+            titulo = tad->getTitulo();
+            contenido = tad->getContenido();
+
+            if (level > 3)
+                painter.setFont(QFont("Arial", 18 - 2*level, 2));
+            else
+                painter.setFont(QFont("Arial", 12));
+
+            painter.drawText(QRect(fromX, fromY, toX - fromX, fromY), Qt::AlignLeft, titulo);
+            y++;
+
+            int divisiones = contenido.size() / 50;
+            fromY = getY(y);
+            toY = getY(y + divisiones);
+
+            painter.setFont(QFont("Arial", 12));
+            painter.drawText(QRect(fromX, fromY, toX - fromX, toY - fromY), Qt::TextWordWrap, contenido);
+            y += divisiones;
+
+            break;
+        }
+        case TADGenericTree::VINETAS:
+        {
+            titulo = tad->getTitulo();
+            contenido = tad->getContenido();
+
+            Node<NodeGenericTree *> *child = current->getChilds()->first();
+
+            while (child != NULL)
+            {
+                contenido = child->getData()->getData()->getContenido();
+                int divisiones = contenido.size() / 50;
+                fromY = getY(y);
+                toY = getY(y + divisiones);
+
+                painter.drawText(QRect(fromX, fromY, toX - fromX, toY - fromY), Qt::TextWordWrap, contenido);
+                y += divisiones;
+
+                child = child->getNext();
+            }
+            return;
+
+            break;
+        }
+        case TADGenericTree::IMAGEN:
+        {
+            QPixmap pixmap;
+            titulo = tad->getTitulo();
+            contenido = tad->getContenido();
+
+            fromX = getX(3);
+            toX = getX(12);
+            fromY = getY(y);
+            toY = getY(y + 8);
+            pixmap = decoderImage(contenido);
+            painter.drawPixmap(QRect(fromX, fromY, toX - fromX, toY - fromY), pixmap);
+            y += 9;
+
+            painter.setFont(QFont("Arial", 12));
+            painter.drawText(QRect(fromX, fromY, toX - fromX, fromY), Qt::AlignHCenter, titulo);
+            y++;
+
+            break;
+        }
+    }
+
+    if (current->getChilds() == NULL)
+        return;
+
+    Node<NodeGenericTree *> *item = current->getChilds()->first();
+
+    while (item != NULL)
+    {
+        childPDF(painter, item->getData(), y, 1);
+
+        item = item->getNext();
+    }
 }
 
 /**
@@ -406,7 +581,7 @@ void DialogDocument::on_btnPDF_clicked()
  */
 int DialogDocument::getX(int i)
 {
-    return 50 * i;
+    return (50 * i) + 10;
 }
 
 /**
@@ -416,7 +591,7 @@ int DialogDocument::getX(int i)
  */
 int DialogDocument::getY(int j)
 {
-    return 50 * j;
+    return (50 * j) + 5;
 }
 
 void DialogDocument::on_btnChoose_clicked()

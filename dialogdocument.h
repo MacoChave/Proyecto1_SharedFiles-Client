@@ -2,13 +2,18 @@
 #define DIALOGDOCUMENT_H
 
 #include <QDialog>
-#include <QFileDialog>
-#include <QTcpSocket>
-#include <QHostAddress>
 #include <QList>
 #include <QFile>
+#include <QFileDialog>
 #include <QTextStream>
 #include <QDebug>
+#include <QByteArray>
+#include <QPixmap>
+#include <QPrinter>
+#include <QPainter>
+
+#include <QTcpSocket>
+#include <QHostAddress>
 
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -88,7 +93,8 @@ private:
     void setData();
     void updateCurrentData();
     QString coderImage(QString value);
-    void decoderImage(QString value);
+    QPixmap decoderImage(QString value);
+    void childPDF(QPainter &painter, NodeGenericTree *current, int &y, int level);
     int getX(int i);
     int getY(int j);
 };

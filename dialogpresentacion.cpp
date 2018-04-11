@@ -489,8 +489,6 @@ void DialogPresentacion::on_btnPDF_clicked()
     QString filepath(filename);
     filepath.append(".pdf");
 
-    int y = 20;
-
     QPrinter printer;
     printer.setOutputFormat(QPrinter::PdfFormat);
     printer.setOutputFileName(filepath);
