@@ -11,7 +11,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->frmNuevo->setVisible(false);
     on_btnOcultar_clicked();
 
-    connectClient();
+//    connectClient();
 }
 
 MainWindow::~MainWindow()
@@ -32,6 +32,11 @@ void MainWindow::connectClient()
                 this,
                 SLOT (consumer())
                 );
+}
+
+void MainWindow::disconnectClient()
+{
+    delete tcpCliente;
 }
 
 void MainWindow::consumer()
@@ -55,21 +60,47 @@ void MainWindow::interpreter(QString mensaje)
     QStringList splMensaje = mensaje.split("^");
 
     if (mensaje.startsWith("SESSION"))
+    {
         actionSesion(splMensaje);
+        disconnectClient();
+
+        loadInformation();
+    }
     else if (mensaje.startsWith("LISTFILES"))
+    {
         actionListFiles(splMensaje);
+        disconnectClient();
+    }
     else if (mensaje.startsWith("INFOFILE"))
+    {
         actionInfoFile(splMensaje);
+        disconnectClient();
+    }
     else if (mensaje.startsWith("CREATEFILE"))
+    {
         actionCreateFile(splMensaje);
+        disconnectClient();
+    }
     else if (mensaje.startsWith("UPDATEFILE"))
+    {
         actionUpdateFile(splMensaje);
+        disconnectClient();
+    }
     else if (mensaje.startsWith("DELETEFILE"))
+    {
         actionDeleteFile(splMensaje);
+        disconnectClient();
+    }
     else if (mensaje.startsWith("LISTUSER"))
+    {
         actionListUser(splMensaje);
+        disconnectClient();
+    }
     else if (mensaje.startsWith("SHAREDUSER"))
+    {
         actionSharedUser(splMensaje);
+        disconnectClient();
+    }
 }
 
 void MainWindow::actionSesion(QStringList value)
@@ -78,7 +109,6 @@ void MainWindow::actionSesion(QStringList value)
     {
         usuario = value[1];
         ui->lblUsuario->setText(usuario);
-        loadInformation();
     }
 }
 
@@ -197,7 +227,9 @@ void MainWindow::loadInformation()
 {
     ui->frmLogin->setVisible(false);
     ui->frmLogout->setVisible(true);
-    producer("LISTFILES");
+
+    connectClient();
+    producer("LISTFILES^" + usuario);
 }
 
 void MainWindow::loadComboBox()
@@ -209,6 +241,7 @@ void MainWindow::loadComboBox()
     message = "LISTUSER^";
     message.append(filename);
 
+    connectClient();
     producer(message);
 }
 
@@ -229,7 +262,6 @@ void MainWindow::cleanTable()
 void MainWindow::cleanComboBox()
 {
     ui->cmbUsuarios->clear();
-
 }
 
 void MainWindow::on_btnActualizar_clicked()
@@ -253,7 +285,10 @@ void MainWindow::on_btnLogin_clicked()
 
 void MainWindow::on_btnLogout_clicked()
 {
+    connectClient();
     producer("LOGOUT");
+    disconnectClient();
+
     ui->lblUsuario->clear();
     usuario.clear();
     clearInformation();
@@ -270,6 +305,8 @@ void MainWindow::on_btnEliminar_clicked()
     int y = ui->tblDocumentos->currentRow();
     QString filename = ui->tblDocumentos->item(y, 0)->text();
     filename.push_front("DELETEDOCS^");
+
+    connectClient();
     producer(filename);
 }
 
@@ -306,7 +343,7 @@ void MainWindow::on_btnVer_clicked()
         p.exec();
     }
 
-    connectClient();
+//    connectClient();
 }
 
 void MainWindow::on_btnNuevo_clicked()
@@ -334,6 +371,7 @@ void MainWindow::on_btnCompartir_clicked()
     message.append("^");
     message.append(permission);
 
+    connectClient();
     producer(message);
 }
 
@@ -349,6 +387,7 @@ void MainWindow::on_btnRestringir_clicked()
     message.append("^");
     message.append(filename);
 
+    connectClient();
     producer(message);
 }
 
@@ -380,6 +419,7 @@ void MainWindow::on_btnReloadCompartidos_clicked()
     QString message("SHAREDUSER^");
     message.append(filename);
 
+    connectClient();
     producer(message);
 }
 
@@ -393,7 +433,7 @@ void MainWindow::on_btnDocumento_clicked()
     d.setWindowTitle("Editor de documentos");
     d.exec();
 
-    connectClient();
+//    connectClient();
     on_btnActualizar_clicked();
     ui->frmNuevo->setVisible(false);
 }
@@ -407,7 +447,7 @@ void MainWindow::on_btnPresentacion_clicked()
     p.setInfo("", "Propietario");
     p.exec();
 
-    connectClient();
+//    connectClient();
     on_btnActualizar_clicked();
     ui->frmNuevo->setVisible(false);
 }
@@ -420,7 +460,7 @@ void MainWindow::on_btnLienzo_clicked()
     l.setWindowTitle("Editor de imagenes");
     l.exec();
 
-    connectClient();
+//    connectClient();
     on_btnActualizar_clicked();
     ui->frmNuevo->setVisible(false);
 }

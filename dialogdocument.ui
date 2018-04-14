@@ -261,8 +261,14 @@
      <height>321</height>
     </rect>
    </property>
+   <property name="selectionBehavior">
+    <enum>QAbstractItemView::SelectItems</enum>
+   </property>
    <property name="indentation">
     <number>4</number>
+   </property>
+   <property name="wordWrap">
+    <bool>true</bool>
    </property>
    <attribute name="headerDefaultSectionSize">
     <number>40</number>

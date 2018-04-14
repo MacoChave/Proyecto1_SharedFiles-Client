@@ -12,6 +12,7 @@ DialogDocument::DialogDocument(QWidget *parent) :
     count = 0;
     tree = new GenericTree<NodeGenericTree *>();
     currentItem = NULL;
+    editarNodo = false;
 
     connectClient();
 }
@@ -42,7 +43,7 @@ void DialogDocument::setInfo(QString _filename, QString _permiso)
         tree->setRoot(node);
 
         currentItem = tree->getRoot();
-        setData();
+        fillTreeWidget();
     }
 }
 
@@ -96,12 +97,12 @@ void DialogDocument::actionInfoFile(QStringList value)
     if (value.size() > 1)
     {
         jsd = QJsonDocument::fromJson(value[1].toUtf8());
-        loadTree();
+        loadTreeFromJSON();
 
         if (tree->getRoot() != NULL)
         {
             currentItem = tree->getRoot();
-            setData();
+            fillTreeWidget();
         }
         else
         qDebug() << "Arbol vacío";
@@ -116,9 +117,9 @@ void DialogDocument::actionCoderImage(QStringList value)
 }
 
 /***********************************************************************************
- * MANEJO DE ARCHIVO JSON
+ * IMPORTAR JSON
  **********************************************************************************/
-void DialogDocument::loadTree()
+void DialogDocument::loadTreeFromJSON()
 {
     if (jsd.isEmpty())
     {
@@ -139,14 +140,14 @@ void DialogDocument::loadTree()
 
     rootNode = new NodeGenericTree(tadRoot);
     List<NodeGenericTree *> *rootChilds = NULL;
-    rootChilds = loadChildsTree(rootJSA);
+    rootChilds = loadChildsTreeFromJSON(rootJSA);
     rootNode->setChilds(rootChilds);
 
     tree->setRoot(rootNode);
     qDebug() << "Arbol cargado";
 }
 
-List<NodeGenericTree *> *DialogDocument::loadChildsTree(QJsonArray currentJSA)
+List<NodeGenericTree *> *DialogDocument::loadChildsTreeFromJSON(QJsonArray currentJSA)
 {
     List<NodeGenericTree *> *list = new List<NodeGenericTree *>();
 
@@ -184,7 +185,7 @@ List<NodeGenericTree *> *DialogDocument::loadChildsTree(QJsonArray currentJSA)
             if (!jsa.isEmpty())
             {
                 List<NodeGenericTree *> *childs = NULL;
-                childs = loadChildsTree(jsa);
+                childs = loadChildsTreeFromJSON(jsa);
                 node->setChilds(childs);
             }
         }
@@ -201,6 +202,9 @@ List<NodeGenericTree *> *DialogDocument::loadChildsTree(QJsonArray currentJSA)
     return list;
 }
 
+/***********************************************************************************
+ * EXPORTAR JSON
+ **********************************************************************************/
 QString DialogDocument::createJSON()
 {
     QJsonObject rootJSO;
@@ -208,11 +212,13 @@ QString DialogDocument::createJSON()
     rootJSO.insert("titulo", currentItem->getData()->getTitulo());
     rootJSO.insert("contenido", currentItem->getData()->getContenido());
 
-    QJsonArray jsa = getChildsTree(currentItem->getChilds());
+    QJsonArray jsa = getChildsTreeJSON(currentItem->getChilds());
     rootJSO.insert("subsecciones", jsa);
+
+    return "";
 }
 
-QJsonArray DialogDocument::getChildsTree(List<NodeGenericTree *> *currentList)
+QJsonArray DialogDocument::getChildsTreeJSON(List<NodeGenericTree *> *currentList)
 {
     QJsonArray rootJSA;
 
@@ -232,7 +238,7 @@ QJsonArray DialogDocument::getChildsTree(List<NodeGenericTree *> *currentList)
             }
             else
             {
-                QJsonArray jsa = getChildsTree(nodeTree->getChilds());
+                QJsonArray jsa = getChildsTreeJSON(nodeTree->getChilds());
                 rootJSO.insert("subsecciones", jsa);
             }
         }
@@ -245,253 +251,11 @@ QJsonArray DialogDocument::getChildsTree(List<NodeGenericTree *> *currentList)
     return rootJSA;
 }
 
-void DialogDocument::setData()
-{
-    if (currentItem == NULL)
-        return;
-
-    clearTreeWidget();
-    setDataTreeWidget();
-}
-
-void DialogDocument::updateCurrentData()
-{
-
-}
-
-QString DialogDocument::coderImage(QString value)
-{
-    producer("CODER^" + value);
-}
-
-QPixmap DialogDocument::decoderImage(QString value)
-{
-    QByteArray ba;
-    ba = QByteArray::fromBase64(value.toLatin1());
-    QPixmap pixmap;
-    pixmap.loadFromData(ba);
-
-    return pixmap;
-}
-
 /***********************************************************************************
- * MANEJO DE DISEÑO DE DOCUMENTO
+ * EXPORTAR PDF
  **********************************************************************************/
-void DialogDocument::on_btnParrafo_clicked()
-{
-    currentItem->getData()->setTipo(TADGenericTree::PARRAFO);
 
-    ui->lblTitulo->setVisible(true);
-    ui->lblTitulo->setText("Titulo (Opcional)");
-    ui->edtImagen->setVisible(true);
-
-    ui->lblContenido->setVisible(true);
-    ui->lblContenido->setText("Contenido (Opcional)");
-    ui->edtContenido->setVisible(true);
-
-    ui->lblImagen->setVisible(false);
-    ui->edtImagen->setVisible(false);
-    ui->btnChoose->setVisible(false);
-}
-
-void DialogDocument::on_btnVineta_clicked()
-{
-    currentItem->getData()->setTipo(TADGenericTree::VINETAS);
-
-    ui->lblTitulo->setVisible(true);
-    ui->lblTitulo->setText("Titulo (Descripción de la lista de elementos)");
-    ui->edtImagen->setVisible(true);
-
-    ui->lblContenido->setVisible(true);
-    ui->lblContenido->setText("Ítems (Un elemento por cada línea)");
-    ui->edtContenido->setVisible(true);
-
-    ui->lblImagen->setVisible(false);
-    ui->edtImagen->setVisible(false);
-    ui->btnChoose->setVisible(false);
-}
-
-void DialogDocument::on_btnImagen_clicked()
-{
-    currentItem->getData()->setTipo(TADGenericTree::IMAGEN);
-
-    ui->lblTitulo->setVisible(true);
-    ui->lblTitulo->setText("Titulo (Pie de la imagen)");
-    ui->edtImagen->setVisible(true);
-
-    ui->lblContenido->setVisible(false);
-    ui->edtContenido->setVisible(false);
-
-    ui->lblImagen->setVisible(true);
-    ui->lblImagen->setText("Imagen");
-    ui->edtImagen->setVisible(true);
-    ui->btnChoose->setVisible(true);
-}
-
-/***********************************************************************************
- * MANEJO DE ITEM
- **********************************************************************************/
-void DialogDocument::on_btnNuevo_clicked()
-{
-    TADGenericTree *tad = new TADGenericTree();
-    tad->setTipo(TADGenericTree::PARRAFO);
-    NodeGenericTree *node = new NodeGenericTree(tad);
-
-    currentItem->addChild(node);
-
-    on_btnParrafo_clicked();
-    currentItem = node;
-    setData();
-}
-
-void DialogDocument::on_btnEliminar_clicked()
-{
-}
-
-void DialogDocument::on_btnGuardarNodo_clicked()
-{
-    NodeGenericTree *node = NULL;
-    TADGenericTree *tad = new TADGenericTree;
-    tad->setTitulo(ui->edtTitulo->text());
-
-    switch (opcion) {
-    case 1: // PARRAFO
-    {
-        tad->setContenido(ui->edtContenido->document()->toPlainText());
-        node = new NodeGenericTree(tad);
-        break;
-    }
-    case 2: // VIÑETAS
-    {
-        tad->setContenido("...");
-        node = new NodeGenericTree();
-        node->setData(tad);
-        qDebug() << tad->getContenido();
-        break;
-    }
-    case 3: // IMAGEN
-    {
-        tad->setContenido(ui->edtImagen->text());
-        node = new NodeGenericTree(tad);
-    }
-    default:
-        delete tad;
-        tad = NULL;
-        return;
-        break;
-    }
-}
-
-/***********************************************************************************
- * MANEJO DE METODOS
- **********************************************************************************/
-void DialogDocument::on_btnGuardar_clicked()
-{
-
-}
-
-void DialogDocument::on_btnCancelar_clicked()
-{
-    QString peticion("INFOFILE^");
-    peticion.append(filename);
-    producer(peticion);
-    qDebug() << "PEDIR DOCUMENTO " << peticion;
-}
-
-void DialogDocument::on_btnGrafico_clicked()
-{
-    QString text;
-    text.append("digraph arbolito");
-    text.append(" {\n");
-    text.append("node [shape = \"box\"]\n");
-
-    text.append(tree->graph());
-
-    text.append("}");
-
-    QFile file("arbolito.dot");
-    if (file.open(QFile::WriteOnly | QFile::Text))
-    {
-        QTextStream out(&file);
-        out << text;
-
-        flush(out);
-        file.close();
-    }
-}
-
-void DialogDocument::on_btnPDF_clicked()
-{
-    if (filename.isEmpty())
-        on_btnGuardar_clicked();
-
-    QString filepath(filename);
-    filepath.append(".pdf");
-
-    QPrinter printer;
-    printer.setOutputFormat(QPrinter::PdfFormat);
-    printer.setOutputFileName(filepath);
-    printer.setOrientation(QPrinter::Portrait);
-    printer.setPaperSize(QPrinter::Letter);
-
-    QPainter painter;
-
-    if (!painter.begin(&printer))
-    {
-        qWarning("Failed to open file, is it writable?");
-        return;
-    }
-
-    int y = 2;
-    int fromX = getX(1);
-    int fromY = getY(y);
-    int toX = getX(14);
-    int toY = getY(y);
-
-    QString titulo = currentItem->getData()->getTitulo();
-    QString contenido = currentItem->getData()->getContenido();
-    qDebug() << "Titulo -> " << titulo;
-    qDebug() << "Contenido.size -> " << contenido.size();
-    qDebug() << "Contenido -> " << contenido;
-
-    painter.setFont(QFont("Arial", 18, 2));
-    painter.drawText(QRect(fromX, fromY, toX - fromX, getY(1)), Qt::AlignHCenter, titulo);
-    y++;
-
-    int divisiones = contenido.size() / 50;
-    fromY = getY(y);
-    toY = getY(y + divisiones);
-
-    painter.setFont(QFont("Arial", 12));
-    painter.drawText(QRect(fromX, fromY, toX - fromX, toY - fromY), Qt::TextWordWrap, contenido);
-    y += divisiones;
-
-    Node<NodeGenericTree *> *item = currentItem->getChilds()->first();
-
-    while (item != NULL)
-    {
-        childPDF(printer, painter, item->getData(), y, 1);
-
-        if (y > 15)
-        {
-            if (!printer.newPage())
-                return;
-
-            y = 2;
-        }
-
-        item = item->getNext();
-    }
-
-    painter.end();
-    qDebug() << "Creación de pdf completo";
-    QString cmd("xdg-open ");
-    cmd.append(filepath);
-
-    system(cmd.toLatin1().data());
-}
-
-void DialogDocument::childPDF(QPrinter &printer, QPainter &painter, NodeGenericTree *current, int &y, int level)
+void DialogDocument::childsToPDF(QPrinter &printer, QPainter &painter, NodeGenericTree *current, int &y, int level)
 {
     TADGenericTree *tad = current->getData();
     int fromX = getX(1);
@@ -615,7 +379,7 @@ void DialogDocument::childPDF(QPrinter &printer, QPainter &painter, NodeGenericT
 
     while (item != NULL)
     {
-        childPDF(printer, painter, item->getData(), y, 1);
+        childsToPDF(printer, painter, item->getData(), y, 1);
 
         if (y > 15)
         {
@@ -649,11 +413,100 @@ int DialogDocument::getY(int j)
     return (50 * j) + 5;
 }
 
+/***********************************************************************************
+ * MANEJO DE DATOS EN WIDGETS
+ **********************************************************************************/
+void DialogDocument::fillWidgets()
+{
+    if (currentItem == NULL)
+        return;
+
+    ui->edtTitulo->setText(currentItem->getData()->getTitulo());
+    switch (currentItem->getData()->getTipo()) {
+        case TADGenericTree::PARRAFO:
+        {
+            ui->edtContenido->setPlainText(currentItem->getData()->getContenido());
+            break;
+        }
+        case TADGenericTree::VINETAS:
+        {
+            break;
+        }
+        case TADGenericTree::IMAGEN:
+        {
+            ui->edtImagen->setText(currentItem->getData()->getContenido());
+            break;
+        }
+    }
+}
+
+void DialogDocument::fillTreeWidget()
+{
+    if (currentItem == NULL)
+        return;
+
+    clearTreeWidget();
+    setDataTreeWidget();
+}
+
+void DialogDocument::clearWidgets()
+{
+    ui->edtTitulo->clear();
+    ui->edtContenido->clear();
+    ui->edtImagen->clear();
+}
+
 void DialogDocument::clearTreeWidget()
 {
     ui->treeWidget->clear();
 }
 
+void DialogDocument::setupWidgets(int tipo)
+{
+    switch (tipo) {
+    case TADGenericTree::PARRAFO:
+    {
+        on_btnParrafo_clicked();
+        break;
+    }
+    case TADGenericTree::VINETAS:
+    {
+        on_btnVineta_clicked();
+        break;
+    }
+    case TADGenericTree::IMAGEN:
+    {
+        on_btnImagen_clicked();
+        break;
+    }
+    default:
+        break;
+    }
+}
+
+/***********************************************************************************
+ * MANEJO DE IMAGEN
+ **********************************************************************************/
+QString DialogDocument::coderImage(QString value)
+{
+    producer("CODER^" + value);
+
+    return "";
+}
+
+QPixmap DialogDocument::decoderImage(QString value)
+{
+    QByteArray ba;
+    ba = QByteArray::fromBase64(value.toLatin1());
+    QPixmap pixmap;
+    pixmap.loadFromData(ba);
+
+    return pixmap;
+}
+
+/***********************************************************************************
+ *
+ **********************************************************************************/
 void DialogDocument::setDataTreeWidget()
 {
     QTreeWidgetItem *rootItem = new QTreeWidgetItem();
@@ -690,6 +543,247 @@ QTreeWidgetItem *DialogDocument::setDataChildTreeWidget(NodeGenericTree *current
     return rootItem;
 }
 
+/***********************************************************************************
+ * MANEJO DE TIPO DE DOCUMENTO
+ **********************************************************************************/
+void DialogDocument::on_btnParrafo_clicked()
+{
+    currentItem->getData()->setTipo(TADGenericTree::PARRAFO);
+
+    ui->lblTitulo->setVisible(true);
+    ui->lblTitulo->setText("Titulo (Opcional)");
+    ui->edtImagen->setVisible(true);
+
+    ui->lblContenido->setVisible(true);
+    ui->lblContenido->setText("Contenido (Opcional)");
+    ui->edtContenido->setVisible(true);
+
+    ui->lblImagen->setVisible(false);
+    ui->edtImagen->setVisible(false);
+    ui->btnChoose->setVisible(false);
+}
+
+void DialogDocument::on_btnVineta_clicked()
+{
+    currentItem->getData()->setTipo(TADGenericTree::VINETAS);
+
+    ui->lblTitulo->setVisible(true);
+    ui->lblTitulo->setText("Titulo (Descripción de la lista de elementos)");
+    ui->edtImagen->setVisible(true);
+
+    ui->lblContenido->setVisible(true);
+    ui->lblContenido->setText("Ítems (Un elemento por cada línea)");
+    ui->edtContenido->setVisible(true);
+
+    ui->lblImagen->setVisible(false);
+    ui->edtImagen->setVisible(false);
+    ui->btnChoose->setVisible(false);
+}
+
+void DialogDocument::on_btnImagen_clicked()
+{
+    currentItem->getData()->setTipo(TADGenericTree::IMAGEN);
+
+    ui->lblTitulo->setVisible(true);
+    ui->lblTitulo->setText("Titulo (Pie de la imagen)");
+    ui->edtImagen->setVisible(true);
+
+    ui->lblContenido->setVisible(false);
+    ui->edtContenido->setVisible(false);
+
+    ui->lblImagen->setVisible(true);
+    ui->lblImagen->setText("Imagen");
+    ui->edtImagen->setVisible(true);
+    ui->btnChoose->setVisible(true);
+}
+
+/***********************************************************************************
+ * CRUD NODO ARBOL
+ **********************************************************************************/
+void DialogDocument::on_btnNuevo_clicked()
+{
+    QTreeWidgetItem *item = ui->treeWidget->currentItem();
+    QString id = item->text(0);
+    NodeGenericTree *node = tree->getNode(id.toInt());
+
+    if (node->getData()->getTipo() != TADGenericTree::PARRAFO)
+        return;
+
+    TADGenericTree *tad = new TADGenericTree();
+    tad->setTipo(TADGenericTree::PARRAFO);
+    NodeGenericTree *newNode = new NodeGenericTree(tad);
+
+    node->addChild(newNode);
+
+    on_btnParrafo_clicked();
+    currentItem = newNode;
+    tree->resetIdNode();
+}
+
+void DialogDocument::on_btnEditar_clicked()
+{
+    QTreeWidgetItem *item = ui->treeWidget->currentItem();
+    QString id = item->text(0);
+    NodeGenericTree *node = tree->getNode(id.toInt());
+
+    switch (node->getData()->getTipo()) {
+    case TADGenericTree::PARRAFO:
+        on_btnParrafo_clicked();
+        break;
+    case TADGenericTree::IMAGEN:
+        on_btnImagen_clicked();
+        break;
+    case TADGenericTree::VINETAS:
+        on_btnVineta_clicked();
+        break;
+    default:
+        break;
+    }
+
+    currentItem = node;
+    fillWidgets();
+}
+
+void DialogDocument::on_btnEliminar_clicked()
+{
+}
+
+void DialogDocument::on_btnGuardarNodo_clicked()
+{
+    currentItem->getData()->setTitulo(ui->edtTitulo->text());
+
+    switch (opcion) {
+    case 1: // PARRAFO
+    {
+        currentItem->getData()->setContenido(ui->edtContenido->document()->toPlainText());
+        break;
+    }
+    case 2: // VIÑETAS
+    {
+        qDebug() << ui->edtContenido->toPlainText();
+        break;
+    }
+    case 3: // IMAGEN
+    {
+        currentItem->getData()->setContenido(ui->edtImagen->text());
+    }
+    default:
+        break;
+    }
+
+    clearTreeWidget();
+    fillTreeWidget();
+}
+
+/***********************************************************************************
+ * MANEJO DE DOCUMENTO
+ **********************************************************************************/
+void DialogDocument::on_btnGuardar_clicked()
+{
+
+}
+
+void DialogDocument::on_btnCancelar_clicked()
+{
+    QString peticion("INFOFILE^");
+    peticion.append(filename);
+    producer(peticion);
+    qDebug() << "PEDIR DOCUMENTO " << peticion;
+}
+
+void DialogDocument::on_btnGrafico_clicked()
+{
+    QString text;
+    text.append("digraph arbolito");
+    text.append(" {\n");
+    text.append("node [shape = \"box\"]\n");
+
+    text.append(tree->graph());
+
+    text.append("}");
+
+    QFile file("arbolito.dot");
+    if (file.open(QFile::WriteOnly | QFile::Text))
+    {
+        QTextStream out(&file);
+        out << text;
+
+        flush(out);
+        file.close();
+    }
+}
+
+void DialogDocument::on_btnPDF_clicked()
+{
+    if (filename.isEmpty())
+        on_btnGuardar_clicked();
+
+    QString filepath(filename);
+    filepath.append(".pdf");
+
+    QPrinter printer;
+    printer.setOutputFormat(QPrinter::PdfFormat);
+    printer.setOutputFileName(filepath);
+    printer.setOrientation(QPrinter::Portrait);
+    printer.setPaperSize(QPrinter::Letter);
+
+    QPainter painter;
+
+    if (!painter.begin(&printer))
+    {
+        qWarning("Failed to open file, is it writable?");
+        return;
+    }
+
+    int y = 2;
+    int fromX = getX(1);
+    int fromY = getY(y);
+    int toX = getX(14);
+    int toY = getY(y);
+
+    QString titulo = currentItem->getData()->getTitulo();
+    QString contenido = currentItem->getData()->getContenido();
+    qDebug() << "Titulo -> " << titulo;
+    qDebug() << "Contenido.size -> " << contenido.size();
+    qDebug() << "Contenido -> " << contenido;
+
+    painter.setFont(QFont("Arial", 18, 2));
+    painter.drawText(QRect(fromX, fromY, toX - fromX, getY(1)), Qt::AlignHCenter, titulo);
+    y++;
+
+    int divisiones = contenido.size() / 50;
+    fromY = getY(y);
+    toY = getY(y + divisiones);
+
+    painter.setFont(QFont("Arial", 12));
+    painter.drawText(QRect(fromX, fromY, toX - fromX, toY - fromY), Qt::TextWordWrap, contenido);
+    y += divisiones;
+
+    Node<NodeGenericTree *> *item = currentItem->getChilds()->first();
+
+    while (item != NULL)
+    {
+        childsToPDF(printer, painter, item->getData(), y, 1);
+
+        if (y > 15)
+        {
+            if (!printer.newPage())
+                return;
+
+            y = 2;
+        }
+
+        item = item->getNext();
+    }
+
+    painter.end();
+    qDebug() << "Creación de pdf completo";
+    QString cmd("xdg-open ");
+    cmd.append(filepath);
+
+    system(cmd.toLatin1().data());
+}
+
 void DialogDocument::on_btnChoose_clicked()
 {
     QString filename = QFileDialog::getOpenFileName(
@@ -702,14 +796,35 @@ void DialogDocument::on_btnChoose_clicked()
 }
 
 /***********************************************************************************
- * CAPTURAR TEXTO
+ * PASAR METODOS A ARBOL
  **********************************************************************************/
-void DialogDocument::on_edtTitulo_returnPressed()
+NodeGenericTree *DialogDocument::getNode(int _id)
 {
-    currentItem->getData()->setTitulo(ui->edtTitulo->text());
+    NodeGenericTree *node = getNode(currentItem, _id);
+    return node;
 }
 
-void DialogDocument::on_edtContenido_textChanged()
+NodeGenericTree *DialogDocument::getNode(NodeGenericTree *current, int _id)
 {
-    currentItem->getData()->setContenido(ui->edtContenido->toPlainText());
+    /* RAIZ - IZQUIERDA -> DERECHA */
+    if (current == NULL)
+        return NULL;
+
+    if (current->getData()->getId() == _id)
+        return current;
+
+    if (current->getChilds() == NULL)
+        return NULL;
+
+    Node<NodeGenericTree *> *node = current->getChilds()->first();
+    NodeGenericTree *result = NULL;
+    while (node != NULL)
+    {
+        result = getNode(node->getData(), _id);
+        if (result != NULL)
+            break;
+        node = node->getNext();
+    }
+
+    return result;
 }

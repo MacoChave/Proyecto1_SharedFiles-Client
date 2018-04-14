@@ -66,6 +66,7 @@ private:
     QTcpSocket *tcpCliente;
 
     void connectClient();
+    void disconnectClient();
     void interpreter(QString mensaje);
 
     void actionSesion(QStringList value);

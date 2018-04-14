@@ -65,9 +65,7 @@ private slots:
 
     void on_btnChoose_clicked();
 
-    void on_edtTitulo_returnPressed();
-
-    void on_edtContenido_textChanged();
+    void on_btnEditar_clicked();
 
 private:
     Ui::DialogDocument *ui;
@@ -75,6 +73,7 @@ private:
     QString permiso;
     GenericTree<NodeGenericTree *> *tree;
     NodeGenericTree *currentItem;
+    bool editarNodo;
     int count;
 
     QTcpSocket *tcpCliente;
@@ -85,22 +84,36 @@ private:
 
     void connectClient();
     void interpreter(QString mensaje);
+
     void actionInfoFile(QStringList value);
     void actionCoderImage(QStringList value);
-    void loadTree();
-    List<NodeGenericTree *> *loadChildsTree(QJsonArray currentJSA);
+
+    void loadTreeFromJSON();
+    List<NodeGenericTree *> *loadChildsTreeFromJSON(QJsonArray currentJSA);
+
     QString createJSON();
-    QJsonArray getChildsTree(List<NodeGenericTree *> *currentList);
-    void setData();
-    void updateCurrentData();
-    QString coderImage(QString value);
-    QPixmap decoderImage(QString value);
-    void childPDF(QPrinter &printer, QPainter &painter, NodeGenericTree *current, int &y, int level);
+    QJsonArray getChildsTreeJSON(List<NodeGenericTree *> *currentList);
+
+    void childsToPDF(QPrinter &printer, QPainter &painter, NodeGenericTree *current, int &y, int level);
     int getX(int i);
     int getY(int j);
+
     void setDataTreeWidget();
     QTreeWidgetItem *setDataChildTreeWidget(NodeGenericTree *current);
+
+    void fillWidgets();
+    void fillTreeWidget();
+    void clearWidgets();
     void clearTreeWidget();
+    void setupWidgets(int tipo);
+
+    QString coderImage(QString value);
+    QPixmap decoderImage(QString value);
+
+
+    /* EN CLASE ARBOL */
+    NodeGenericTree *getNode(int _id);
+    NodeGenericTree *getNode(NodeGenericTree *current, int _id);
 };
 
 #endif // DIALOGDOCUMENT_H
